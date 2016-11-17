@@ -143,3 +143,6 @@ fabric.properties
 # modules.xml
 # .idea/misc.xml 
 # *.ipr
+
+# Ignore person directorys
+person_*
