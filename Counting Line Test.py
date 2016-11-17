@@ -32,14 +32,13 @@ DIVIDER_COLOUR = (255, 255, 0)
 BOUNDING_BOX_COLOUR = (255, 0, 0)
 CENTROID_COLOUR = (0, 0, 255)
 
-HAAR_CASCADE_FACE_XML = \
-    "C:\\OpenCV Extract\\opencv\\sources\\data\\" + \
-    "haarcascades_GPU\\haarcascade_frontalface_default.xml"
+#https://github.com/opencv/opencv/tree/master/data/haarcascades
+HAAR_CASCADE_FACE_XML = "/haarcascade_frontalface_default.xml"
 
-print (HAAR_CASCADE_FACE_XML)
+print os.getcwd() + HAAR_CASCADE_FACE_XML
 
 face_cascade = cv2.CascadeClassifier()
-assert (face_cascade.load(HAAR_CASCADE_FACE_XML) == True)
+assert (face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML))
 
 RED = (255, 0, 0)
 RED_BGR = (0, 0, 255)
