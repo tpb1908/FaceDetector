@@ -9,7 +9,8 @@ while True:
     ret, frame = cap.read()
 
     cv2.imshow("Image", frame)
-    if cv2.waitKey(33) == 1048608:
+    k = cv2.waitKey(33)
+    if k == ord('c') or k == 104860:
         break
 
 cv2.destroyAllWindows()

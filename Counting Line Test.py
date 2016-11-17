@@ -32,13 +32,17 @@ DIVIDER_COLOUR = (255, 255, 0)
 BOUNDING_BOX_COLOUR = (255, 0, 0)
 CENTROID_COLOUR = (0, 0, 255)
 
-#https://github.com/opencv/opencv/tree/master/data/haarcascades
+# https://github.com/opencv/opencv/tree/master/data/haarcascades
 HAAR_CASCADE_FACE_XML = "/haarcascade_frontalface_default.xml"
+
+# "C:\\OpenCV Extract\\opencv\\sources\\data\\haarcascades_GPU\\haarcascade_frontalface_default.xml"
+
 
 print os.getcwd() + HAAR_CASCADE_FACE_XML
 
 face_cascade = cv2.CascadeClassifier()
-assert (face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML))
+# assert (face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML))
+assert face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML)
 
 RED = (255, 0, 0)
 RED_BGR = (0, 0, 255)
@@ -68,6 +72,7 @@ ctr = 0
 def detect_Faces(img):
     # ctr = 0
     i = 0
+    matches = []
     while True:
         i += 1
         ret, img = cap.read()
@@ -83,8 +88,7 @@ def detect_Faces(img):
 
         cv2.imshow('Webcam', img)
 
-        print(len(matches))
-        if (len(matches) >= 1):
+        if len(matches) >= 1:
             break
 
     return matches
@@ -103,13 +107,11 @@ def process_frame(frame_number, frame, face_counter):  # , img
 
     # Draw dividing line -- we count cars as they cross this line.
     cv2.line(processed, (0, face_counter.divider), (frame.shape[1], face_counter.divider), DIVIDER_COLOUR, 1)
-    print("Doing something- line")
 
     # save_frame("/mask_%04d.png"
     #   , frame_number, frame, "foreground mask for frame #%d")
     # print("Doing something - saved")
     matches = detect_Faces(frame)
-    print("Doing something- found faces")
     for (i, match) in enumerate(matches):
         face, centroid = match
 
@@ -119,9 +121,7 @@ def process_frame(frame_number, frame, face_counter):  # , img
         # NB: Fixed the off-by one in the bottom right corner
         cv2.rectangle(processed, (x, y), (x + w - 1, y + h - 1), BOUNDING_BOX_COLOUR, 1)
         cv2.circle(processed, centroid, 2, CENTROID_COLOUR, -1)
-    print("Doing something - loop")
     face_counter.update_count(matches, processed)
-    print("Doing something - update")
     return processed
 
 
@@ -137,7 +137,6 @@ def main():
     while True:
         frame_number += 1
         ret, frame = cap.read()
-        print(ret)
 
         if not ret:
             print("Error")
@@ -152,10 +151,8 @@ def main():
         cv2.imshow('Processed Image', processed)
         #        cv2.imshow('Webcam', frame)
 
-        print("Doing something")
-
         k = cv2.waitKey(33)
-        if k == 27:
+        if k != -1:
             # Escape
             break
 
