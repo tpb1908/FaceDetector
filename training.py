@@ -4,27 +4,24 @@ Created on Mon Aug 08 14:24:57 2016
 
 @author: vs26
 """
+import warnings
 import cv2
-import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib import patches
 import numpy as np
 import os
-from sklearn.feature_extraction import image
 import glob
-from skimage import transform
 from scipy.fftpack import dct
 from sklearn.metrics import accuracy_score
-from scipy.ndimage import convolve
-from sklearn import linear_model, datasets, metrics, svm, decomposition
+from sklearn import linear_model
 from sklearn.mixture import GMM
 import cPickle as pickle
 
 #FIXME Ignoring warnings
 # Some method being called is deprecated
+
+
 def warn(*args, **kwargs):
     pass
-import warnings
+
 warnings.warn = warn
 
 W, H = 100, 100
@@ -43,7 +40,7 @@ def dct_2d(a):
     return dct(dct(a.T).T)
 
 
-# get all images from the data set
+# Get all images from the data set
 for i, el in enumerate(glob.glob("person_*")):
     print el, i
 
@@ -64,19 +61,13 @@ for i, el in enumerate(glob.glob("person_*")):
         face_dct = dct_2d(face_img)
         face_x = face_dct[:RETAIN, :RETAIN].flatten()
 
-        # eigenfaces
-        #
-        #        face_x = face_img.flatten()
-
-
-
         # face_features is a 64-dimensional feature vector of the face
 
         # look at zig zag
 
         face_features.append(face_x)
 
-    print (len(face_features))
+    print len(face_features)
 
     if not len(face_features):
         continue
@@ -103,11 +94,6 @@ gmm.fit(X_train)
 
 thresh = np.percentile(gmm.score(X_test), 5)
 
-# pca = decomposition.RandomizedPCA(n_components=150, whiten=True)
-# pca.fit(X_train)
-# X_train = pca.transform(X_train)
-# X_test = pca.transform(X_test)
-
 # Build model here
 clf2 = linear_model.LogisticRegression()
 clf2.fit(X_train, y_train)
@@ -120,6 +106,5 @@ print y_test
 print "Accuracy score:"
 print accuracy_score(clf2.predict(X_test), y_test)
 
-with open("face-model-clf2-new.pkl", "wb") as fh:
+with open("face-model-clf2.pkl", "wb") as fh:
     pickle.dump([clf2, gmm, thresh], fh)
-# print clf

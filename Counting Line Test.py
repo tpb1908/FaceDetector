@@ -8,22 +8,13 @@ Created on Wed Oct 05 12:46:24 2016
 import cv2
 import matplotlib.pyplot as plt
 import os
-from skimage import transform
-from scipy.fftpack import dct
-from skimage.io import imsave
-import glob
-import logging
-import logging.handlers
-import time
-import sys
-import numpy as np
 
 from FaceCounter import *
 
 plt.close('all')
 
 # Time to wait between frames, 0=forever
-WAIT_TIME = 1  # 250 # ms
+WAIT_TIME = 1  # 250 ms
 
 LOG_TO_FILE = True
 
@@ -35,13 +26,9 @@ CENTROID_COLOUR = (0, 0, 255)
 # https://github.com/opencv/opencv/tree/master/data/haarcascades
 HAAR_CASCADE_FACE_XML = "/haarcascade_frontalface_default.xml"
 
-# "C:\\OpenCV Extract\\opencv\\sources\\data\\haarcascades_GPU\\haarcascade_frontalface_default.xml"
-
-
 print os.getcwd() + HAAR_CASCADE_FACE_XML
 
 face_cascade = cv2.CascadeClassifier()
-# assert (face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML))
 assert face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML)
 
 RED = (255, 0, 0)
@@ -50,7 +37,7 @@ RED_BGR = (0, 0, 255)
 W, H = 100, 100
 
 
-# getting the cluster of points (?)
+# Getting the cluster of points (?)
 def get_centroid(x, y, w, h):
     x1 = int(w / 2)
     y1 = int(h / 2)
@@ -58,18 +45,15 @@ def get_centroid(x, y, w, h):
     cx = x + x1
     cy = y + y1
 
-    return (cx, cy)
+    return cx, cy
 
 
 cap = cv2.VideoCapture()
-# print ("Hello")
 print cap.open(0)
 
-# faces is contour_valid, matches is matches
-ctr = 0
 
 
-def detect_Faces(img):
+def detect_faces(img):
     # ctr = 0
     i = 0
     matches = []
@@ -105,20 +89,18 @@ def process_frame(frame_number, frame, face_counter):  # , img
     # Create a copy of source frame to draw into
     processed = frame.copy()
 
-    # Draw dividing line -- we count cars as they cross this line.
+    # Draw dividing line -- we count things as they cross this line.
     cv2.line(processed, (0, face_counter.divider), (frame.shape[1], face_counter.divider), DIVIDER_COLOUR, 1)
 
     # save_frame("/mask_%04d.png"
     #   , frame_number, frame, "foreground mask for frame #%d")
-    # print("Doing something - saved")
-    matches = detect_Faces(frame)
+    matches = detect_faces(frame)
     for (i, match) in enumerate(matches):
         face, centroid = match
 
         x, y, w, h = face
 
         # Mark the bounding box and the centroid on the processed frame
-        # NB: Fixed the off-by one in the bottom right corner
         cv2.rectangle(processed, (x, y), (x + w - 1, y + h - 1), BOUNDING_BOX_COLOUR, 1)
         cv2.circle(processed, centroid, 2, CENTROID_COLOUR, -1)
     face_counter.update_count(matches, processed)
@@ -126,11 +108,9 @@ def process_frame(frame_number, frame, face_counter):  # , img
 
 
 def main():
-    ctr = 0
     face_counter = None  # Will be created after first frame is captured
     # Set up image source
-    cap = cv2.VideoCapture()
-
+    ctr = 0
     cap.open(0)
     print(cap.isOpened())
     frame_number = -1
@@ -149,7 +129,6 @@ def main():
         processed = process_frame(frame_number, frame, face_counter)
 
         cv2.imshow('Processed Image', processed)
-        #        cv2.imshow('Webcam', frame)
 
         k = cv2.waitKey(33)
         if k != -1:

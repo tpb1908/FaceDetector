@@ -11,16 +11,17 @@ import cv2
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
-HAAR_CASCADE_FACE_XML = \
-    "C:\\opencv\\sources\\data\\" + \
-    "haarcascades_cuda\\haarcascade_frontalface_default.xml"
+HAAR_CASCADE_FACE_XML = "/haarcascade_frontalface_default.xml"
 
 print HAAR_CASCADE_FACE_XML
 
 face_cascade = cv2.CascadeClassifier()
-assert (face_cascade.load(HAAR_CASCADE_FACE_XML) == True)
+assert face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML)
 
-data_dir = "F:\\DataSet\\"
+if not os.path.exists("DataSet"):
+    os.makedirs("DataSet")
+
+data_dir = os.getcwd() + "/DataSet/"
 
 print data_dir
 

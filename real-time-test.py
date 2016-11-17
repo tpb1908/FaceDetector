@@ -5,27 +5,20 @@ Created on Mon Aug 08 11:29:22 2016
 @author: vs26
 """
 
+import warnings
 import cv2
 import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib import patches
-import numpy as np
 import os
-from sklearn.feature_extraction import image
 import glob
 from skimage import transform
 from scipy.fftpack import dct
-from sklearn.metrics import accuracy_score
 import cPickle as pickle
-from skimage.io import imsave
-from sklearn.decomposition import PCA
 
 
-#FIXME Ignoring warnings
-# Some method being called is deprecated
 def warn(*args, **kwargs):
+    # FIXME Ignoring warnings
+    # Some method being called is deprecated
     pass
-import warnings
 warnings.warn = warn
 
 plt.close('all')
@@ -37,16 +30,14 @@ print (HAAR_CASCADE_FACE_XML)
 face_cascade = cv2.CascadeClassifier()
 assert (face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML))
 
-with open("face-model-clf2-new.pkl", "rb") as fh:
+with open("face-model-clf2.pkl", "rb") as fh:
     clf, gmm, thresh = pickle.load(fh)
-# print clf
-
 
 RED = (255, 0, 0)  # For BGR colour space
 RED_BGR = (0, 0, 255)
 
 cap = cv2.VideoCapture()
-print cap.open(0)
+print "Opening camera " + str(cap.open(0))
 
 
 def dct_2d(a):
@@ -59,6 +50,7 @@ W, H = 100, 100
 ctr = 0
 names = {}
 
+# Finding people
 for idx, f_dir in enumerate(glob.glob("person_*")):
     names[idx] = f_dir.split("_")[1]
 
@@ -74,23 +66,17 @@ while True:
         face_img = img_grey[y:y + h, x:x + w]
         face_img = transform.resize(face_img, (W, H))
 
-        # imsave(os.path.join("Amber", "{}_.png".format(ctr)), face_img)
-
         # 2d-dct and truncate
         face_dct = dct_2d(face_img)
         face_x = face_dct[:RETAIN, :RETAIN].flatten().reshape((1, -1))
 
-        imposter = gmm.score(face_x) < thresh
+        impostor = gmm.score(face_x) < thresh
 
-        #        face_x = face_img.flatten().reshape((1, -1))
-        #        face_x = pca.transform(face_x)
-
-        if not imposter:
-            # print clf.predict(face_x)
+        if not impostor:
             pred_cls = clf.predict(face_x)[0]
             pred_name = names[pred_cls]
         else:
-            pred_name = "Imposter"
+            pred_name = "Impostor"
 
         cv2.putText(
             img, "{}".format(pred_name), (x, y - 5),
@@ -99,7 +85,7 @@ while True:
     cv2.imshow('Webcam', img)
 
     k = cv2.waitKey(33)
-    if k != -1:
+    if k != -1:  # Any key press
         # Escape
         break
 
