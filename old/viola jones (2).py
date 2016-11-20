@@ -5,24 +5,16 @@ Created on Tue Aug 02 10:23:16 2016
 @author: vs26
 """
 
-import cv2
-import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib import patches
+import glob
 import numpy as np
 import os
-from sklearn.feature_extraction import image
-import glob
-from skimage import transform
 from scipy.fftpack import dct
-from sklearn.metrics import accuracy_score
+from skimage import transform
+
+import cv2
+import matplotlib.pyplot as plt
+
 # from __future__ import print_function
-from scipy.ndimage import convolve
-from sklearn import linear_model, datasets, metrics
-from sklearn.cross_validation import train_test_split
-from sklearn.neural_network import BernoulliRBM
-from sklearn.pipeline import Pipeline
-import cPickle as pickle
 
 plt.close('all')
 
@@ -33,7 +25,7 @@ HAAR_CASCADE_FACE_XML = \
 print (HAAR_CASCADE_FACE_XML)
 
 face_cascade = cv2.CascadeClassifier()
-assert (face_cascade.load(HAAR_CASCADE_FACE_XML) == True)
+assert face_cascade.load(HAAR_CASCADE_FACE_XML)
 
 # For still image
 
@@ -136,7 +128,7 @@ X_test = np.vstack(X_test)
 # print (X_test.shape, y_test.shape)
 #
 #
-## Build model here
+# Build model here
 # clf = linear_model.LogisticRegression()
 # clf.fit(X_train, y_train)
 #
@@ -148,17 +140,6 @@ X_test = np.vstack(X_test)
 # with open("face-model-clf.pkl", "wb") as fh:
 #     pickle.dump(clf, fh)
 # print clf
-
-
-
-
-
-
-
-
-
-
-
 
 # logistic_classifier = linear_model.LogisticRegression(C=100.0)
 # logistic_classifier.fit(X_train, y_train)
@@ -173,9 +154,6 @@ X_test = np.vstack(X_test)
 #    metrics.classification_report(
 #        y_test,
 #        logistic_classifier.predict(X_test))))
-
-
-
 
 # LogisticRegression
 # SVM - SVC
@@ -192,9 +170,7 @@ X_test = np.vstack(X_test)
 # ax.add_patch(
 # patches.Rectangle(
 # (x, y), w, h, fill=False, edgecolor="red",linewidth=2))
-#                              
-##            
-##        
+#
 #
 # ------------------------------ Code 2 ------------------------------
 

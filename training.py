@@ -13,14 +13,16 @@ from scipy.fftpack import dct
 from sklearn.metrics import accuracy_score
 from sklearn import linear_model
 from sklearn.mixture import GMM
-import cPickle as pickle
+import cPickle as Pickle
 
-#FIXME Ignoring warnings
+
+# FIXME Ignoring warnings
 # Some method being called is deprecated
 
 
-def warn(*args, **kwargs):
+def warn():
     pass
+
 
 warnings.warn = warn
 
@@ -107,4 +109,4 @@ print "Accuracy score:"
 print accuracy_score(clf2.predict(X_test), y_test)
 
 with open("face-model-clf2.pkl", "wb") as fh:
-    pickle.dump([clf2, gmm, thresh], fh)
+    Pickle.dump([clf2, gmm, thresh], fh)

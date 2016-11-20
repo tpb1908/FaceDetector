@@ -5,11 +5,11 @@ Created on Tue Aug 02 12:47:33 2016
 @author: vs26
 """
 
-import os
 import glob
+import os
+
 import cv2
 import matplotlib.pyplot as plt
-from matplotlib import cm
 
 HAAR_CASCADE_FACE_XML = "/haarcascade_frontalface_default.xml"
 

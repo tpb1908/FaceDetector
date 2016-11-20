@@ -13,6 +13,8 @@ class FaceCounter(object):
 
         self.face_count = 0
 
-    def update_count(self, matches, output_image=None):
+    @staticmethod
+    def update_count(matches, output_image=None):
         # self.log.debug("Updating count using %d matches...", len(matches))
         return
+

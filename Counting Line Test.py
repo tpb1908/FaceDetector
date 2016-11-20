@@ -52,8 +52,7 @@ cap = cv2.VideoCapture()
 print cap.open(0)
 
 
-
-def detect_faces(img):
+def detect_faces():
     # ctr = 0
     i = 0
     matches = []
@@ -78,13 +77,13 @@ def detect_faces(img):
     return matches
 
 
-def save_frame(file_name_format, frame_number, frame, label_format):
+def save_frame(file_name_format, frame_number, frame):
     file_name = file_name_format % frame_number
 
     cv2.imwrite(file_name, frame)
 
 
-def process_frame(frame_number, frame, face_counter):  # , img
+def process_frame(frame, face_counter):  # , img
 
     # Create a copy of source frame to draw into
     processed = frame.copy()
@@ -94,7 +93,7 @@ def process_frame(frame_number, frame, face_counter):  # , img
 
     # save_frame("/mask_%04d.png"
     #   , frame_number, frame, "foreground mask for frame #%d")
-    matches = detect_faces(frame)
+    matches = detect_faces()
     for (i, match) in enumerate(matches):
         face, centroid = match
 
@@ -126,7 +125,7 @@ def main():
             # We do this here, so that we can initialize with actual frame size
             face_counter = FaceCounter(frame.shape[:2], frame.shape[0] / 2)
 
-        processed = process_frame(frame_number, frame, face_counter)
+        processed = process_frame(frame, face_counter)
 
         cv2.imshow('Processed Image', processed)
 

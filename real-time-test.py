@@ -12,10 +12,10 @@ import os
 import glob
 from skimage import transform
 from scipy.fftpack import dct
-import cPickle as pickle
+import cPickle as Pickle
 
 
-def warn(*args, **kwargs):
+def warn():
     # FIXME Ignoring warnings
     # Some method being called is deprecated
     pass
@@ -31,7 +31,7 @@ face_cascade = cv2.CascadeClassifier()
 assert (face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML))
 
 with open("face-model-clf2.pkl", "rb") as fh:
-    clf, gmm, thresh = pickle.load(fh)
+    clf, gmm, thresh = Pickle.load(fh)
 
 RED = (255, 0, 0)  # For BGR colour space
 RED_BGR = (0, 0, 255)
