@@ -53,7 +53,8 @@ def dct_2d(a):
 cap = cv2.VideoCapture()
 print "Camera open " + str(cap.open(0))
 
-ctr = 0
+path, dirs, files = os.walk(name).next()
+ctr = len(files)
 
 while True:
     ret, img = cap.read()
@@ -65,6 +66,9 @@ while True:
         face_img = img_grey[y:y + h, x:x + w]
         face_img = transform.resize(face_img, (W, H))
         imsave(os.path.join(name, "{}_.png".format(ctr)), face_img)
+        cv2.putText(
+            img, "{}".format(ctr), (x, y - 5),
+            cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 
     cv2.imshow('Webcam', img)
 

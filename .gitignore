@@ -144,5 +144,5 @@ fabric.properties
 # .idea/misc.xml 
 # *.ipr
 
-# Ignore person directorys
+# Ignore person directories
 person_*
