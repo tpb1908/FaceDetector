@@ -10,6 +10,8 @@ import os
 from skimage import transform
 from scipy.fftpack import dct
 from skimage.io import imsave
+import training
+
 
 plt.close('all')
 
@@ -29,55 +31,59 @@ X_test = []
 y_test = []
 names = []
 
-# Ask for name
-name = raw_input("What is your name? ")
-name = "person_{}".format(name)
-
-# for idx, folder in enumerate(glob.glob('person_*')):
-#    name = folder.split('_')[1]
-#    names[idx] = name
-
-
-# Create folder for new person
-if not os.path.exists(name):
-    os.makedirs(name)
-
-# Collect and save images using cv2
-RETAIN = 8
-W, H = 100, 100
-
 
 def dct_2d(a):
     return dct(dct(a.T).T)
 
-cap = cv2.VideoCapture()
-print "Camera open " + str(cap.open(0))
 
-path, dirs, files = os.walk(name).next()
-ctr = len(files)
+def begin_enrolment():
+    # Ask for name
+    name = raw_input("What is your name? ")
+    name = "person_{}".format(name)
 
-while True:
-    ret, img = cap.read()
-    img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(img_grey, 1.3, 5)
-    # Possibly add minSize=(200, 200)
-    for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)
-        face_img = img_grey[y:y + h, x:x + w]
-        face_img = transform.resize(face_img, (W, H))
-        imsave(os.path.join(name, "{}_.png".format(ctr)), face_img)
-        cv2.putText(
-            img, "{}".format(ctr), (x, y - 5),
-            cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
+    # for idx, folder in enumerate(glob.glob('person_*')):
+    #    name = folder.split('_')[1]
+    #    names[idx] = name
 
-    cv2.imshow('Webcam', img)
+    # Create folder for new person
+    if not os.path.exists(name):
+        os.makedirs(name)
 
-    k = cv2.waitKey(33)
-    if k != -1:
-        # Escape
-        break
+    # Collect and save images using cv2
+    RETAIN = 8
+    W, H = 100, 100
 
-    ctr += 1
+    cap = cv2.VideoCapture()
+    print "Camera open " + str(cap.open(0))
 
-cv2.destroyAllWindows()
-cap.release()
+    path, dirs, files = os.walk(name).next()
+    ctr = len(files)
+
+    while True:
+        ret, img = cap.read()
+        img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(img_grey, 1.3, 5)
+        # Possibly add minSize=(200, 200)
+        for (x, y, w, h) in faces:
+            cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)
+            face_img = img_grey[y:y + h, x:x + w]
+            face_img = transform.resize(face_img, (W, H))
+            imsave(os.path.join(name, "{}_.png".format(ctr)), face_img)
+            cv2.putText(
+                img, "{}".format(ctr), (x, y - 5),
+                cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
+
+        cv2.imshow('Webcam', img)
+
+        k = cv2.waitKey(33)
+        if k != -1:
+            # Escape
+            break
+
+        ctr += 1
+
+    cv2.destroyAllWindows()
+    cap.release()
+    print 'Capture complete, beginning training'
+    training.train()
+
