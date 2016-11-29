@@ -29,8 +29,8 @@ def test():
     with open("face-model-clf2.pkl", "rb") as fh:
         clf, gmm, thresh = Pickle.load(fh)
 
-    RED = (255, 0, 0)  # For BGR colour space
-    RED_BGR = (0, 0, 255)
+    r_e_d = (255, 0, 0)  # For BGR colour space
+    r_e_d__b_g_r = (0, 0, 255)
 
     cap = cv2.VideoCapture()
     print "Opening camera " + str(cap.open(0))
@@ -38,8 +38,8 @@ def test():
     def dct_2d(a):
         return dct(dct(a.T).T)
 
-    RETAIN = 8
-    W, H = 100, 100
+    retain = 8
+    w, h = 100, 100
 
     ctr = 0
     names = {}
@@ -55,14 +55,14 @@ def test():
         faces = face_cascade.detectMultiScale(img_grey, 1.2, 5, minSize=(150, 150))
 
         for (x, y, w, h) in faces:
-            cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)
+            cv2.rectangle(img, (x, y), (x + w, y + h), r_e_d__b_g_r, 2)
 
             face_img = img_grey[y:y + h, x:x + w]
-            face_img = transform.resize(face_img, (W, H))
+            face_img = transform.resize(face_img, (w, h))
 
             # 2d-dct and truncate
             face_dct = dct_2d(face_img)
-            face_x = face_dct[:RETAIN, :RETAIN].flatten().reshape((1, -1))
+            face_x = face_dct[:retain, :retain].flatten().reshape((1, -1))
 
             impostor = gmm.score(face_x) < thresh
 

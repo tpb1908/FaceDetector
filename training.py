@@ -22,15 +22,15 @@ import cPickle as Pickle
 
 def train():
 
-    W, H = 100, 100
-    RETAIN = 8
+    w, h = 100, 100
+    retain = 8
 
     face_images = []
 
-    X_train = []
+    x_train = []
     y_train = []
 
-    X_test = []
+    x_test = []
     y_test = []
 
     def dct_2d(a):
@@ -55,7 +55,7 @@ def train():
 
             # 2d-dct and truncate
             face_dct = dct_2d(face_img)
-            face_x = face_dct[:RETAIN, :RETAIN].flatten()
+            face_x = face_dct[:retain, :retain].flatten()
 
             # face_features is a 64-dimensional feature vector of the face
 
@@ -69,38 +69,38 @@ def train():
             continue
 
         test = face_features[-10:]
-        X_test.append(test)
+        x_test.append(test)
         y_test += [i] * len(test)
 
         train = face_features[:-10]
-        X_train += train
+        x_train += train
         y_train += [i] * len(train)
 
     y_train = np.array(y_train)
     y_test = np.array(y_test)
 
-    X_train = np.vstack(X_train)
-    X_test = np.vstack(X_test)
+    x_train = np.vstack(x_train)
+    x_test = np.vstack(x_test)
 
-    print (X_train.shape, y_train.shape)
-    print (X_test.shape, y_test.shape)
+    print (x_train.shape, y_train.shape)
+    print (x_test.shape, y_test.shape)
 
     gmm = GMM(n_components=8)
-    gmm.fit(X_train)
+    gmm.fit(x_train)
 
-    thresh = np.percentile(gmm.score(X_test), 5)
+    thresh = np.percentile(gmm.score(x_test), 5)
 
     # Build model here
     clf2 = linear_model.LogisticRegression()
-    clf2.fit(X_train, y_train)
+    clf2.fit(x_train, y_train)
 
     print "Subject number given to the algorithm: "
-    print clf2.predict(X_test)
+    print clf2.predict(x_test)
     print "Subject number predicted by the algorithm: "
     print y_test
 
     print "Accuracy score:"
-    print accuracy_score(clf2.predict(X_test), y_test)
+    print accuracy_score(clf2.predict(x_test), y_test)
 
     with open("face-model-clf2.pkl", "wb") as fh:
         Pickle.dump([clf2, gmm, thresh], fh)

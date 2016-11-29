@@ -50,8 +50,8 @@ def begin_enrolment():
         os.makedirs(name)
 
     # Collect and save images using cv2
-    RETAIN = 8
-    W, H = 100, 100
+    retain = 8
+    w, h = 100, 100
 
     cap = cv2.VideoCapture()
     print "Camera open " + str(cap.open(0))
@@ -67,7 +67,7 @@ def begin_enrolment():
         for (x, y, w, h) in faces:
             cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)
             face_img = img_grey[y:y + h, x:x + w]
-            face_img = transform.resize(face_img, (W, H))
+            face_img = transform.resize(face_img, (w, h))
             imsave(os.path.join(name, "{}_.png".format(ctr)), face_img)
             cv2.putText(
                 img, "{}".format(ctr), (x, y - 5),
