@@ -27,11 +27,12 @@ to a map (dictionary).
 On each iteration the positions must then be compared to track
 the movement of each face.
 
+```
 main loop {
     detect each face on screen
     for face in faces {
         if face can be matched to name {
-            check if their is previous position in map {
+            if their is previous position in map {
                 compare the position in the map and the current position
             } else {
                 add face position and name to map
@@ -43,4 +44,5 @@ main loop {
         }
     }
 }
+```
 
