@@ -1,5 +1,11 @@
 # FaceDetector
 
+## Install
+```
+sudo pip2 install -r requirements.txt
+sudo apt-get install python-opencv python-tk
+```
+
 ## TODO
 
 ### UI
