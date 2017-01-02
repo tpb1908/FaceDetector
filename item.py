@@ -1,4 +1,5 @@
 import cv2
+import random
 
 class Item:
     def __init__(self, x = 0, y = 0):
@@ -7,6 +8,7 @@ class Item:
         self.y = y
         self.width = 50
         self.height = 50
+        self.points = random.randint(30, 50)
 
     # Check for collision with another rectangle
     def isColliding(self, x, y, width, height):
@@ -18,3 +20,6 @@ class Item:
     # Draw the item to the frame
     def render(self, frame):
         cv2.rectangle(frame, (self.x, self.y), (self.x + self.width, self.y + self.height), (0, 0, 255), -1)
+
+    def points(self):
+        return self.points

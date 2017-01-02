@@ -5,6 +5,8 @@ from item import Item
 class Game:
     def __init__(self):
         self.running = False
+        self.points = 0
+        self.faces = []
 
         # Initizlize camera
         self.camera = cv2.VideoCapture()
@@ -21,9 +23,6 @@ class Game:
             item = Item(random.randint(0, self.width-50), random.randint(0, self.height-50))
             self.items.append(item)
 
-        # Initizle faces
-        self.faces = []
-        
     # Update method
     def update(self):
         # Get the next webcam frame
@@ -44,6 +43,7 @@ class Game:
             # Check if face collides with any items
             for i in self.items:
                 if i.isColliding(x, y, width, height):
+                    self.points += i.points
                     self.items.remove(i)
 
         # Check for key press
@@ -61,6 +61,10 @@ class Game:
         # Render faces
         for (x, y, width, height) in self.faces:
             cv2.rectangle(self.frame, (x, y), (x+width, y+height), (255, 0, 0), 2)
+
+        # Render score
+        text = "Score: " + str(self.points)
+        cv2.putText(self.frame, text, (20, 40), cv2.FONT_ITALIC, 1, (0, 255, 0))
 
         # Push frame to window
         cv2.imshow("Camera", self.frame)
