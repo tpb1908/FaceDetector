@@ -1,6 +1,7 @@
 import cv2
 import random
 
+
 class Item:
     def __init__(self, x = 0, y = 0):
         # Initialize item size
@@ -11,11 +12,9 @@ class Item:
         self.points = random.randint(30, 50)
 
     # Check for collision with another rectangle
-    def isColliding(self, x, y, width, height):
-        return (self.x < x + width and
-            self.x + self.width > x and
-            self.y < y + height and
-            self.height + self.y > y)
+    def is_colliding(self, x, y, width, height):
+        return (not (not (self.x < x + width) or not (self.x + self.width > x) or not (self.y < y + height)) and
+                self.height + self.y > y)
 
     # Draw the item to the frame
     def render(self, frame):

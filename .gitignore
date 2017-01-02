@@ -109,6 +109,9 @@ ENV/
 .idea/dynamic.xml
 .idea/uiDesigner.xml
 
+#Inspection profiles
+.idea/inspectionProfiles
+
 # Gradle:
 .idea/gradle.xml
 .idea/libraries
