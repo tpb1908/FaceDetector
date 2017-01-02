@@ -6,7 +6,6 @@ from item import Item
 
 class Game:
     def __init__(self):
-        flag, self.frame = self.camera.read()
         self.real_time = 0
         self.running = False
         self.playing = False
@@ -33,6 +32,7 @@ class Game:
     # Update method
     def update(self, dt):
         # Get the next webcam frame
+        flag, self.frame = self.camera.read()
 
         if self.playing:
             # Check if time is up

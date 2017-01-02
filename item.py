@@ -13,8 +13,10 @@ class Item:
 
     # Check for collision with another rectangle
     def is_colliding(self, x, y, width, height):
-        return (not (not (self.x < x + width) or not (self.x + self.width > x) or not (self.y < y + height)) and
-                self.height + self.y > y)
+        return (self.x < x + width and
+            self.x + self.width > x and
+            self.y < y + height and
+            self.height + self.y > y)
 
     # Draw the item to the frame
     def render(self, frame):
