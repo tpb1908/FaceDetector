@@ -18,7 +18,7 @@ class Game:
 
         # Detect faces in frame
         gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-        faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
+        faces = self.face_cascade.detectMultiScale(gray, 1.2, 5, minSize=(150, 150))
         for (x, y, width, height) in faces:
             # Draw rectange around face
             cv2.rectangle(self.frame, (x, y), (x+width, y+height), (255, 0, 0), 2)
