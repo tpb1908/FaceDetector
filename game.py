@@ -22,6 +22,12 @@ class Game:
         # Load cascade
         self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
+    def reset(self):
+        self.points = 0
+        self.time = 0
+        self.faces = []
+        self.items = []
+
     # Update method
     def update(self, dt):
         # Get the next webcam frame
@@ -31,26 +37,30 @@ class Game:
             # Check if time is up
             self.time += dt
             if self.time >= 20:
-                self.playing = False
                 print self.points
+                # Reset the game
+                self.playing = False
+                self.reset()
+                
+            # Continue with the game
+            else:
+                # Add items until their are 3
+                while len(self.items) < 3:
+                    item = Item(random.randint(0, self.width-50), random.randint(0, self.height-50))
+                    self.items.append(item)
 
-            # Add items until their are 3
-            while len(self.items) < 3:
-                item = Item(random.randint(0, self.width-50), random.randint(0, self.height-50))
-                self.items.append(item)
+                # Detect faces in frame
+                gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
+                faces = self.face_cascade.detectMultiScale(gray, 1.2, 5, minSize=(150, 150))
+                self.faces = []
+                for (x, y, width, height) in faces:
+                    self.faces.append((x, y, width, height))
 
-            # Detect faces in frame
-            gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-            faces = self.face_cascade.detectMultiScale(gray, 1.2, 5, minSize=(150, 150))
-            self.faces = []
-            for (x, y, width, height) in faces:
-                self.faces.append((x, y, width, height))
-
-                # Check if face collides with any items
-                for i in self.items:
-                    if i.isColliding(x, y, width, height):
-                        self.points += i.points
-                        self.items.remove(i)
+                    # Check if face collides with any items
+                    for i in self.items:
+                        if i.isColliding(x, y, width, height):
+                            self.points += i.points
+                            self.items.remove(i)
 
         # Check for key press
         key = cv2.waitKey(33)
@@ -71,13 +81,18 @@ class Game:
         for (x, y, width, height) in self.faces:
             cv2.rectangle(self.frame, (x, y), (x+width, y+height), (255, 0, 0), 2)
 
-        # Render score
-        text = "Score: " + str(self.points)
-        cv2.putText(self.frame, text, (20, 40), cv2.FONT_ITALIC, 1, (0, 255, 0))
+        if self.playing:
+            # Render score
+            text = "Score: " + str(self.points)
+            cv2.putText(self.frame, text, (20, 40), cv2.FONT_ITALIC, 1, (0, 255, 0))
 
-        # Render time
-        text = "Time: " + str(int(20 - self.time))
-        cv2.putText(self.frame, text, (20, 80), cv2.FONT_ITALIC, 1, (0, 255, 255)) 
+            # Render time
+            text = "Time: " + str(int(20 - self.time))
+            cv2.putText(self.frame, text, (20, 80), cv2.FONT_ITALIC, 1, (0, 255, 255)) 
+        else:
+            text = "Press space bar to start"
+            (width, height), _ = cv2.getTextSize(text, cv2.FONT_ITALIC, 1, 3)
+            cv2.putText(self.frame, text, (int(self.width/2 - width/2), int(self.height/2 - height/2)), cv2.FONT_ITALIC, 1, (0, 0, 0), 3)
 
         # Push frame to window
         cv2.imshow("Camera", self.frame)
