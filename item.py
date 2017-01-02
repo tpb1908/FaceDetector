@@ -1,0 +1,20 @@
+import cv2
+
+class Item:
+    def __init__(self, x = 0, y = 0):
+        # Initialize item size
+        self.x = x
+        self.y = y
+        self.width = 50
+        self.height = 50
+
+    # Check for collision with another rectangle
+    def isColliding(self, x, y, width, height):
+        return (self.x < x + width and
+            self.x + self.width > x and
+            self.y < y + height and
+            self.height + self.y > y)
+
+    # Draw the item to the frame
+    def render(self, frame):
+        cv2.rectangle(frame, (self.x, self.y), (self.x + self.width, self.y + self.height), (0, 0, 255), -1)
