@@ -8,10 +8,20 @@ class Game:
         self.camera = cv2.VideoCapture()
         self.camera.open(0)
 
+        # Load cascade
+        self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
     # Update method
     def update(self):
         # Get the next webcam frame
         flag, self.frame = self.camera.read()
+
+        # Detect faces in frame
+        gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
+        faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
+        for (x, y, width, height) in faces:
+            # Draw rectange around face
+            cv2.rectangle(self.frame, (x, y), (x+width, y+height), (255, 0, 0), 2)
 
         # Check for key press
         key = cv2.waitKey(33)
