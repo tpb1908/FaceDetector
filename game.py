@@ -20,8 +20,6 @@ class Game:
         self.width = self.camera.get(3)
         self.height = self.camera.get(4)
 
-
-
         # Load cascade
         self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
@@ -54,8 +52,8 @@ class Game:
 
                 # Detect faces in frame
                 gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-                self.frame = gray
-                cv_faces = self.face_cascade.detectMultiScale(gray, 1.3, 5, minSize=(150, 150))
+                # minSize=(150, 150)
+                cv_faces = self.face_cascade.detectMultiScale(gray, 1.2, 5, )
                 self.faces = cv_faces
                 for (x, y, width, height) in self.faces:
                     # Check if face collides with any items
