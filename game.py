@@ -20,6 +20,8 @@ class Game:
         self.width = self.camera.get(3)
         self.height = self.camera.get(4)
 
+
+
         # Load cascade
         self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
@@ -48,18 +50,17 @@ class Game:
                 # Add items until their are 3
                 while len(self.items) < 3:
                     item = Item(random.randint(0, self.width-50), random.randint(0, self.height-50))
-                    self.items.append(item)
+                    self.items.append(item)   
 
                 # Detect faces in frame
                 gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-                faces = self.face_cascade.detectMultiScale(gray, 1.2, 5, minSize=(150, 150))
-                self.faces = []
-                for (x, y, width, height) in faces:
-                    self.faces.append((x, y, width, height))
-
+                self.frame = gray
+                cv_faces = self.face_cascade.detectMultiScale(gray, 1.3, 5, minSize=(150, 150))
+                self.faces = cv_faces
+                for (x, y, width, height) in self.faces:
                     # Check if face collides with any items
                     for i in self.items:
-                        if i.isColliding(x, y, width, height):
+                        if i.is_colliding(x, y, width, height):
                             self.points += i.points
                             self.items.remove(i)
 
