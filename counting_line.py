@@ -90,7 +90,7 @@ def detect_faces():
     # possibly add minSize=(200, 200)
     matches = []
     global old_positions
-    old_positions = positions
+    old_positions = positions.copy()
     for (x, y, w, h) in faces:
         cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)
         centroid = get_centroid(x, y, w, h)
