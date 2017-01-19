@@ -5,6 +5,7 @@ Created on Wed Oct 05 12:46:24 2016
 @author: johnsona15
 """
 
+
 import cv2
 import matplotlib.pyplot as plt
 import os
@@ -14,6 +15,13 @@ from scipy.fftpack import dct
 import cPickle as Pickle
 
 from FaceCounter import *
+
+
+def warn(*args, **kwargs):
+    pass
+
+import warnings
+warnings.warn = warn
 
 plt.close('all')
 
@@ -54,6 +62,8 @@ for idx, f_dir in enumerate(glob.glob("person_*")):
     names[idx] = f_dir.split("_")[1]
 
 # Getting the cluster of points (?)
+
+
 def get_centroid(x, y, w, h):
     x1 = int(w / 2)
     y1 = int(h / 2)
