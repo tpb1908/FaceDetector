@@ -172,7 +172,9 @@ def process_frame(frame, face_counter):  # , img
             print("Last updated {}".format(c1[1]))
             pass
             # Found someone crossing the line
-
+    for (n, c) in positions.items():
+        if c[1] + 3 < int(time.time()):
+            del positions[n]
     return processed
 
 
