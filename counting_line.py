@@ -93,9 +93,8 @@ def detect_faces():
     global old_positions
     old_positions = positions.copy()  # Copy previous values
     for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)  # Draw a rectangle around the match
+        # cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)  # Draw a rectangle around the match
         centroid = get_centroid(x, y, w, h)  # Find the central position
-
 
         face_img = img_grey[y:y + h, x:x + w]  # Convert the image to grey-scale
         face_img = transform.resize(face_img, (w, h))
@@ -169,8 +168,7 @@ def process_frame(frame, face_counter):  # , img
         # print("{} at {} from {}".format(n1, c1, c2))
 
         if (c1[0][1] > H / 2 > c2[0][1]) or (c1[0][1] < H / 2 < c2[0][1]):
-            print("{} crossed the line".format(n1))
-            print("Last updated {}".format(c1[1]))
+            print("{} crossed the line at {}".format(n1, c1[1]))
             pass
             # Found someone crossing the line
     for (n, c) in positions.items():
