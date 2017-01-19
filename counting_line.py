@@ -26,8 +26,6 @@ warnings.warn = warn
 
 plt.close('all')
 
-# Time to wait between frames, 0=forever
-WAIT_TIME = 1  # 250 ms
 
 LOG_TO_FILE = True
 
@@ -50,6 +48,8 @@ RED_BGR = (0, 0, 255)
 
 positions = {}
 old_positions = {}
+
+W, H = 100, 100
 
 retain = 8
 with open("face-model-clf2.pkl", "rb") as fh:
@@ -91,14 +91,13 @@ def detect_faces():
     # possibly add minSize=(200, 200)
     matches = []
     global old_positions
-    old_positions = positions.copy()
+    old_positions = positions.copy()  # Copy previous values
     for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)
-        centroid = get_centroid(x, y, w, h)
+        cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)  # Draw a rectangle around the match
+        centroid = get_centroid(x, y, w, h)  # Find the central position
 
-        matches.append(((x, y, w, h), centroid))
 
-        face_img = img_grey[y:y + h, x:x + w]
+        face_img = img_grey[y:y + h, x:x + w]  # Convert the image to grey-scale
         face_img = transform.resize(face_img, (w, h))
 
         # 2d-dct and truncate
@@ -110,14 +109,14 @@ def detect_faces():
         if not impostor:
             pred_cls = clf.predict(face_x)[0]
             pred_name = names[pred_cls]
-            # TODO Remove names which haven't been in frame for a certain time
+
             if pred_name in positions:
                 positions[pred_name] = (centroid, int(time.time()))
             else:
                 positions[pred_name] = (centroid, int(time.time()))
 
         else:
-            # TODO Don't add impostors
+            # TODO Don't add impostors to positions
             pred_name = "Impostor"
             if pred_name in positions:
                 # print("Updating persons position")
@@ -126,11 +125,8 @@ def detect_faces():
                 # print("Adding person to positions")
                 positions[pred_name] = (centroid, int(time.time()))
 
-        cv2.putText(
-            img, "{}".format(pred_name), (x, y - 5),
-            cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
-
-    # We don't really need to show this
+        matches.append((pred_name, (x, y, w, h), centroid))
+    # We don't really need to show the person their face twice
     # cv2.imshow('Webcam', img)
 
     return matches
@@ -154,13 +150,18 @@ def process_frame(frame, face_counter):  # , img
     #   , frame_number, frame, "foreground mask for frame #%d")
     matches = detect_faces()
     for (i, match) in enumerate(matches):
-        face, centroid = match
+        name, face, centroid = match
 
         x, y, w, h = face
 
         # Mark the bounding box and the centroid on the processed frame
         cv2.rectangle(processed, (x, y), (x + w - 1, y + h - 1), BOUNDING_BOX_COLOUR, 1)
         cv2.circle(processed, centroid, 2, CENTROID_COLOUR, -1)
+
+        cv2.putText(
+            processed, "{}".format(name), (x, y - 5),
+            cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
+
     face_counter.update_count(matches, processed)
 
     # print("Positions {} Old positions {}".format(str(len(positions)), str(len(old_positions))))
@@ -191,7 +192,7 @@ def main():
     while True:
         frame_number += 1
         ret, frame = cap.read()
-        W, H = tuple(frame.shape[1::-1])
+        W, H = tuple(frame.shape[1::-1]) # Get the width and height of the frame
         # print("H {} W {}".format(H, W))
         if not ret:
             print("Error")
