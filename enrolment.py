@@ -59,7 +59,7 @@ def begin_enrolment():
     path, dirs, files = os.walk(name).next()
     ctr = len(files)
 
-    while True:
+    while cap.isOpened():
         ret, img = cap.read()
         img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(img_grey, 1.3, 5)
@@ -82,8 +82,9 @@ def begin_enrolment():
 
         ctr += 1
 
-    cv2.destroyAllWindows()
     cap.release()
+    cv2.destroyAllWindows()
+
     print 'Capture complete, beginning training'
     training.train()
 

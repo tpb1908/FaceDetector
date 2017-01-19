@@ -46,10 +46,9 @@ assert face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML)
 RED = (255, 0, 0)
 RED_BGR = (0, 0, 255)
 
-W, H = 100, 100
 
-old_positions = {}
 positions = {}
+old_positions = {}
 
 retain = 8
 with open("face-model-clf2.pkl", "rb") as fh:
@@ -90,6 +89,7 @@ def detect_faces():
     faces = face_cascade.detectMultiScale(img_grey, 1.3, 5)
     # possibly add minSize=(200, 200)
     matches = []
+    global old_positions
     old_positions = positions
     for (x, y, w, h) in faces:
         cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)
@@ -109,20 +109,28 @@ def detect_faces():
         if not impostor:
             pred_cls = clf.predict(face_x)[0]
             pred_name = names[pred_cls]
-
-            if positions.has_key(pred_name):
+            # TODO Remove names which haven't been in frame for a certain time
+            if pred_name in positions:
                 positions[pred_name] = centroid
             else:
                 positions[pred_name] = centroid
 
         else:
+            # TODO Don't add impostors
             pred_name = "Impostor"
+            if pred_name in positions:
+                # print("Updating persons position")
+                positions[pred_name] = centroid
+            else:
+                # print("Adding person to positions")
+                positions[pred_name] = centroid
 
         cv2.putText(
             img, "{}".format(pred_name), (x, y - 5),
             cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 
-    cv2.imshow('Webcam', img)
+    # We don't really need to show this
+    # cv2.imshow('Webcam', img)
 
     return matches
 
@@ -154,8 +162,11 @@ def process_frame(frame, face_counter):  # , img
         cv2.circle(processed, centroid, 2, CENTROID_COLOUR, -1)
     face_counter.update_count(matches, processed)
 
+    # print("Positions {} Old positions {}".format(str(len(positions)), str(len(old_positions))))
     for (n1, c1), (n2, c2) in zip(positions.items(), old_positions.items()):
-        if (c1.y > 50 and c2.y < 50) or (c1.y < 50 and c2.y > 50):
+        print("{} at {} from {}".format(n1, c1, c2))
+        if (c1[1] > H / 2 > c2[1]) or (c1[1] < H / 2 < c2[1]):
+            print("{} crossed the line".format(n1))
             pass
             # Found someone crossing the line
 
@@ -169,10 +180,14 @@ def main():
     cap.open(0)
     print(cap.isOpened())
     frame_number = -1
+
+    global W, H
+
     while True:
         frame_number += 1
         ret, frame = cap.read()
-
+        H, W = tuple(frame.shape[1::-1])
+        print("H {} W {}".format(H, W))
         if not ret:
             print("Error")
             break

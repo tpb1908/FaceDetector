@@ -48,7 +48,7 @@ def test():
     for idx, f_dir in enumerate(glob.glob("person_*")):
         names[idx] = f_dir.split("_")[1]
 
-    while True:
+    while cap.isOpened():
         ret, img = cap.read()
         img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -85,5 +85,5 @@ def test():
 
         ctr += 1
 
-    cv2.destroyAllWindows()
     cap.release()
+    cv2.destroyAllWindows()
