@@ -13,6 +13,7 @@ import glob
 from skimage import transform
 from scipy.fftpack import dct
 import cPickle as Pickle
+import time
 
 from FaceCounter import *
 
@@ -111,19 +112,19 @@ def detect_faces():
             pred_name = names[pred_cls]
             # TODO Remove names which haven't been in frame for a certain time
             if pred_name in positions:
-                positions[pred_name] = centroid
+                positions[pred_name] = (centroid, int(time.time()))
             else:
-                positions[pred_name] = centroid
+                positions[pred_name] = (centroid, int(time.time()))
 
         else:
             # TODO Don't add impostors
             pred_name = "Impostor"
             if pred_name in positions:
                 # print("Updating persons position")
-                positions[pred_name] = centroid
+                positions[pred_name] = (centroid, int(time.time()))
             else:
                 # print("Adding person to positions")
-                positions[pred_name] = centroid
+                positions[pred_name] = (centroid, int(time.time()))
 
         cv2.putText(
             img, "{}".format(pred_name), (x, y - 5),
@@ -164,9 +165,11 @@ def process_frame(frame, face_counter):  # , img
 
     # print("Positions {} Old positions {}".format(str(len(positions)), str(len(old_positions))))
     for (n1, c1), (n2, c2) in zip(positions.items(), old_positions.items()):
-        print("{} at {} from {}".format(n1, c1, c2))
-        if (c1[1] > H / 2 > c2[1]) or (c1[1] < H / 2 < c2[1]):
+        # print("{} at {} from {}".format(n1, c1, c2))
+
+        if (c1[0][1] > H / 2 > c2[0][1]) or (c1[0][1] < H / 2 < c2[0][1]):
             print("{} crossed the line".format(n1))
+            print("Last updated {}".format(c1[1]))
             pass
             # Found someone crossing the line
 
@@ -186,8 +189,8 @@ def main():
     while True:
         frame_number += 1
         ret, frame = cap.read()
-        H, W = tuple(frame.shape[1::-1])
-        print("H {} W {}".format(H, W))
+        W, H = tuple(frame.shape[1::-1])
+        # print("H {} W {}".format(H, W))
         if not ret:
             print("Error")
             break
