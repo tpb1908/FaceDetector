@@ -80,10 +80,14 @@ def test():
 
         k = cv2.waitKey(33)
         if k != -1:  # Any key press
+            cap.release()
+
             # Escape
-            break
 
         ctr += 1
 
-    cap.release()
+    # Apparently CV2 windows are a bit shit, and so we have to try waitKey a few times for the window to close
+    cv2.waitKey(1)
     cv2.destroyAllWindows()
+    for i in range(1, 5):
+        cv2.waitKey(1)

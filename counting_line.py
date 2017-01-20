@@ -207,12 +207,15 @@ def main():
         k = cv2.waitKey(33)
         if k != -1:
             # Escape
-            break
+            cap.release()
 
         ctr += 1
 
+    # Apparently CV2 windows are a bit shit, and so we have to try waitKey a few times for the window to close
+    cv2.waitKey(1)
     cv2.destroyAllWindows()
-    cap.release()
+    for i in range(1, 5):
+        cv2.waitKey(1)
 
 
 main()
