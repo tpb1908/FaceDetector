@@ -6,49 +6,17 @@ sudo pip2 install -r requirements.txt
 sudo apt-get install python-opencv python-tk
 ```
 
-## TODO
+## Use
 
-### UI
+To enroll a new user: 
+1. Run main and then click 'Enrol'
+2. Enter a unique name for the user
+3. Allow around 100 pictures to be taken
+4. Press esc and allow training to run
 
-Main UI with buttons to each program
-List of currently enrolled users
-Buttons for enrolment and training etc
+Detecting faces
+- Run real time test and check if the user's face is detected and the correct name is displayed
 
-
-### Fixes
-
-Set up the close buttons for each view
-
-
-### Optimisation
-
-Use one instance of cv2 ?? 
-
-### Face tracking
-
-One a person has been enrolled they can be matched
-the match allow each face position on screen to be cached 
-to a map (dictionary).
-
-On each iteration the positions must then be compared to track
-the movement of each face.
-
-```
-main loop {
-    detect each face on screen
-    for face in faces {
-        if face can be matched to name {
-            if their is previous position in map {
-                compare the position in the map and the current position
-            } else {
-                add face position and name to map
-            }
-        } else {
-            generate new name 
-            train
-            add face position and name to map
-        }
-    }
-}
-```
-
+Counting movement
+- Run counting_line
+- Move the user's head up and down so that the central red dot crosses the line

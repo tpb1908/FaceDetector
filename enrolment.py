@@ -77,8 +77,7 @@ def begin_enrolment():
 
         k = cv2.waitKey(33)
         if k != -1:
-            # Escape
-            break
+            cap.release()
 
         ctr += 1
 
