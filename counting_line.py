@@ -5,6 +5,8 @@ Created on Wed Oct 05 12:46:24 2016
 @author: johnsona15
 """
 
+# TODO Stop treating tuples like lists
+
 
 import cv2
 import matplotlib.pyplot as plt
@@ -110,19 +112,19 @@ def detect_faces():
             pred_name = names[pred_cls]
 
             if pred_name in positions:
-                positions[pred_name] = (centroid, int(time.time()))
+                positions[pred_name] = (centroid, int(time.time()), positions[pred_name][2])
             else:
-                positions[pred_name] = (centroid, int(time.time()))
+                positions[pred_name] = (centroid, int(time.time()), 0)
 
         else:
             # TODO Don't add impostors to positions
             pred_name = "Impostor"
             if pred_name in positions:
                 # print("Updating persons position")
-                positions[pred_name] = (centroid, int(time.time()))
+                positions[pred_name] = (centroid, int(time.time()), positions[pred_name][2])
             else:
                 # print("Adding person to positions")
-                positions[pred_name] = (centroid, int(time.time()))
+                positions[pred_name] = (centroid, int(time.time()), 0)
 
         matches.append((pred_name, (x, y, w, h), centroid))
     # We don't really need to show the person their face twice
@@ -157,18 +159,28 @@ def process_frame(frame, face_counter):  # , img
         cv2.rectangle(processed, (x, y), (x + w - 1, y + h - 1), BOUNDING_BOX_COLOUR, 1)
         cv2.circle(processed, centroid, 2, CENTROID_COLOUR, -1)
 
-        cv2.putText(
-            processed, "{}".format(name), (x, y - 5),
-            cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
+        # TODO Draw number of line crosses
+        if name in positions:
+            cv2.putText(
+                processed, "{} {}".format(name, positions[name][2]), (x, y - 5),
+                cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
+        else:
+            cv2.putText(
+                processed, "{}".format(name), (x, y - 5),
+                cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 
     face_counter.update_count(matches, processed)
 
     # print("Positions {} Old positions {}".format(str(len(positions)), str(len(old_positions))))
-    for (n1, c1), (n2, c2) in zip(positions.items(), old_positions.items()):
+    for (n1, t1), (n2, t2) in zip(positions.items(), old_positions.items()):
         # print("{} at {} from {}".format(n1, c1, c2))
 
-        if (c1[0][1] > H / 2 > c2[0][1]) or (c1[0][1] < H / 2 < c2[0][1]):
-            print("{} crossed the line at {}".format(n1, c1[1]))
+        if (t1[0][1] > H / 2 > t2[0][1]) or (t1[0][1] < H / 2 < t2[0][1]):
+            print("{} crossed the line at {}".format(n1, t1[1]))
+            # TODO Don't do this
+            lst = list(positions[n1])
+            lst[2] += 1
+            positions[n1] = tuple(lst)
             pass
             # Found someone crossing the line
     for (n, c) in positions.items():
@@ -190,7 +202,7 @@ def main():
     while True:
         frame_number += 1
         ret, frame = cap.read()
-        W, H = tuple(frame.shape[1::-1]) # Get the width and height of the frame
+        W, H = tuple(frame.shape[1::-1])  # Get the width and height of the frame
         # print("H {} W {}".format(H, W))
         if not ret:
             print("Error")
