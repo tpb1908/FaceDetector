@@ -9,7 +9,6 @@ Created on Wed Oct 05 12:46:24 2016
 
 
 import cv2
-import matplotlib.pyplot as plt
 import os
 import glob
 from skimage import transform
@@ -26,10 +25,6 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
-plt.close('all')
-
-
-LOG_TO_FILE = True
 
 # Colours for drawing on processed frames
 DIVIDER_COLOUR = (255, 255, 0)
@@ -44,9 +39,6 @@ print os.getcwd() + HAAR_CASCADE_FACE_XML
 face_cascade = cv2.CascadeClassifier()
 assert face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML)
 
-RED = (255, 0, 0)
-RED_BGR = (0, 0, 255)
-
 
 positions = {}
 old_positions = {}
@@ -59,11 +51,17 @@ with open("face-model-clf2.pkl", "rb") as fh:
 
 names = {}
 
-# Finding people
+# Loading the people that we have enrolled
 for idx, f_dir in enumerate(glob.glob("person_*")):
     names[idx] = f_dir.split("_")[1]
 
-# Getting the cluster of points (?)
+
+cap = cv2.VideoCapture()
+print cap.open(0)
+
+
+def dct_2d(a):
+    return dct(dct(a.T).T)
 
 
 def get_centroid(x, y, w, h):
@@ -76,16 +74,7 @@ def get_centroid(x, y, w, h):
     return cx, cy
 
 
-cap = cv2.VideoCapture()
-print cap.open(0)
-
-
-def dct_2d(a):
-    return dct(dct(a.T).T)
-
-
 def detect_faces():
-    # ctr = 0
 
     ret, img = cap.read()
     img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -95,7 +84,6 @@ def detect_faces():
     global old_positions
     old_positions = positions.copy()  # Copy previous values
     for (x, y, w, h) in faces:
-        # cv2.rectangle(img, (x, y), (x + w, y + h), RED_BGR, 2)  # Draw a rectangle around the match
         centroid = get_centroid(x, y, w, h)  # Find the central position
 
         face_img = img_grey[y:y + h, x:x + w]  # Convert the image to grey-scale
@@ -105,6 +93,7 @@ def detect_faces():
         face_dct = dct_2d(face_img)
         face_x = face_dct[:retain, :retain].flatten().reshape((1, -1))
 
+        # Check if we recognise the face
         impostor = gmm.score(face_x) < thresh
 
         if not impostor:
@@ -117,38 +106,24 @@ def detect_faces():
                 positions[pred_name] = (centroid, int(time.time()), 0)
 
         else:
-            # TODO Don't add impostors to positions
+            # FIXME We only add impostors to make it easier to test
             pred_name = "Impostor"
             if pred_name in positions:
-                # print("Updating persons position")
                 positions[pred_name] = (centroid, int(time.time()), positions[pred_name][2])
             else:
-                # print("Adding person to positions")
-                positions[pred_name] = (centroid, int(time.time()), 0)
+                positions[pred_name] = (centroid, int(time.time()), 0)  # A new person
 
         matches.append((pred_name, (x, y, w, h), centroid))
-    # We don't really need to show the person their face twice
-    # cv2.imshow('Webcam', img)
 
     return matches
 
 
-def save_frame(file_name_format, frame_number, frame):
-    file_name = file_name_format % frame_number
+def process_frame(frame, face_counter):
 
-    cv2.imwrite(file_name, frame)
+    # Draw the boundary line
+    # TODO Make the position optional
+    cv2.line(frame, (0, face_counter.divider), (frame.shape[1], face_counter.divider), DIVIDER_COLOUR, 1)
 
-
-def process_frame(frame, face_counter):  # , img
-
-    # Create a copy of source frame to draw into
-    processed = frame.copy()
-
-    # Draw dividing line -- we count things as they cross this line.
-    cv2.line(processed, (0, face_counter.divider), (frame.shape[1], face_counter.divider), DIVIDER_COLOUR, 1)
-
-    # save_frame("/mask_%04d.png"
-    #   , frame_number, frame, "foreground mask for frame #%d")
     matches = detect_faces()
     for (i, match) in enumerate(matches):
         name, face, centroid = match
@@ -156,51 +131,43 @@ def process_frame(frame, face_counter):  # , img
         x, y, w, h = face
 
         # Mark the bounding box and the centroid on the processed frame
-        cv2.rectangle(processed, (x, y), (x + w - 1, y + h - 1), BOUNDING_BOX_COLOUR, 1)
-        cv2.circle(processed, centroid, 2, CENTROID_COLOUR, -1)
+        cv2.rectangle(frame, (x, y), (x + w - 1, y + h - 1), BOUNDING_BOX_COLOUR, 1)
+        cv2.circle(frame, centroid, 2, CENTROID_COLOUR, -1)
 
-        # TODO Draw number of line crosses
         if name in positions:
+            
             cv2.putText(
-                processed, "{} {}".format(name, positions[name][2]), (x, y - 5),
+                frame, "{} {}".format(name, positions[name][2]), (x, y - 5),
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
-        else:
+        else:  # If the person is new
             cv2.putText(
-                processed, "{}".format(name), (x, y - 5),
+                frame, "{}".format(name), (x, y - 5),
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 
-    face_counter.update_count(matches, processed)
+    face_counter.update_count(matches, frame)
 
-    # print("Positions {} Old positions {}".format(str(len(positions)), str(len(old_positions))))
     for (n1, t1), (n2, t2) in zip(positions.items(), old_positions.items()):
-        # print("{} at {} from {}".format(n1, c1, c2))
-
         if (t1[0][1] > H / 2 > t2[0][1]) or (t1[0][1] < H / 2 < t2[0][1]):
             print("{} crossed the line at {}".format(n1, t1[1]))
             # TODO Don't do this
-            lst = list(positions[n1])
-            lst[2] += 1
-            positions[n1] = tuple(lst)
-            pass
-            # Found someone crossing the line
+            positions[n1] = (positions[n1][0], positions[n1][1], positions[n1][2] + 1)
+
+    # We search for people that we haven't detected for 3 seconds
     for (n, c) in positions.items():
         if c[1] + 3 < int(time.time()):
             del positions[n]
-    return processed
+    return frame
 
 
 def main():
     face_counter = None  # Will be created after first frame is captured
     # Set up image source
-    ctr = 0
     cap.open(0)
     print(cap.isOpened())
-    frame_number = -1
 
     global W, H
 
     while True:
-        frame_number += 1
         ret, frame = cap.read()
         W, H = tuple(frame.shape[1::-1])  # Get the width and height of the frame
         # print("H {} W {}".format(H, W))
@@ -212,16 +179,12 @@ def main():
             # We do this here, so that we can initialize with actual frame size
             face_counter = FaceCounter(frame.shape[:2], frame.shape[0] / 2)
 
-        processed = process_frame(frame, face_counter)
-
-        cv2.imshow('Processed Image', processed)
+        cv2.imshow('Processed Image', process_frame(frame, face_counter))
 
         k = cv2.waitKey(33)
         if k != -1:
             # Escape
             cap.release()
-
-        ctr += 1
 
     # Apparently CV2 windows are a bit shit, and so we have to try waitKey a few times for the window to close
     cv2.waitKey(1)
