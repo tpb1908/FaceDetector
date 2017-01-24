@@ -15,14 +15,13 @@ from skimage import transform
 from scipy.fftpack import dct
 import cPickle as Pickle
 import time
-
+import warnings
 from FaceCounter import *
 
 
 def warn(*args, **kwargs):
     pass
 
-import warnings
 warnings.warn = warn
 
 
@@ -40,8 +39,8 @@ face_cascade = cv2.CascadeClassifier()
 assert face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML)
 
 
-positions = {}
-old_positions = {}
+positions = {}  # For the current frame
+old_positions = {}  # To dif against
 
 W, H = 100, 100
 
@@ -57,21 +56,15 @@ for idx, f_dir in enumerate(glob.glob("person_*")):
 
 
 cap = cv2.VideoCapture()
-print cap.open(0)
 
 
 def dct_2d(a):
     return dct(dct(a.T).T)
 
 
+# Find the centre of a face
 def get_centroid(x, y, w, h):
-    x1 = int(w / 2)
-    y1 = int(h / 2)
-
-    cx = x + x1
-    cy = y + y1
-
-    return cx, cy
+    return x + int(w / 2), y + int(h / 2)
 
 
 def detect_faces():
@@ -121,7 +114,7 @@ def detect_faces():
 def process_frame(frame, face_counter):
 
     # Draw the boundary line
-    # TODO Make the position optional
+    # TODO Make the position optional so that we can detect line crossing anywhere, or multiple lines
     cv2.line(frame, (0, face_counter.divider), (frame.shape[1], face_counter.divider), DIVIDER_COLOUR, 1)
 
     matches = detect_faces()
@@ -135,7 +128,6 @@ def process_frame(frame, face_counter):
         cv2.circle(frame, centroid, 2, CENTROID_COLOUR, -1)
 
         if name in positions:
-            
             cv2.putText(
                 frame, "{} {}".format(name, positions[name][2]), (x, y - 5),
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
@@ -162,12 +154,11 @@ def process_frame(frame, face_counter):
 def main():
     face_counter = None  # Will be created after first frame is captured
     # Set up image source
-    cap.open(0)
-    print(cap.isOpened())
+    assert cap.open(0)
 
     global W, H
 
-    while True:
+    while cap.isOpened():
         ret, frame = cap.read()
         W, H = tuple(frame.shape[1::-1])  # Get the width and height of the frame
         # print("H {} W {}".format(H, W))
