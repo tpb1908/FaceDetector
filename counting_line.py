@@ -17,6 +17,7 @@ import cPickle as Pickle
 import time
 import warnings
 from FaceCounter import *
+from Face import Face
 
 
 def warn(*args, **kwargs):
@@ -58,15 +59,6 @@ for idx, f_dir in enumerate(glob.glob("person_*")):
 cap = cv2.VideoCapture()
 
 
-def dct_2d(a):
-    return dct(dct(a.T).T)
-
-
-# Find the centre of a face
-def get_centroid(x, y, w, h):
-    return x + int(w / 2), y + int(h / 2)
-
-
 def detect_faces():
 
     ret, img = cap.read()
@@ -76,37 +68,30 @@ def detect_faces():
     matches = []
     global old_positions
     old_positions = positions.copy()  # Copy previous values
-    for (x, y, w, h) in faces:
-        centroid = get_centroid(x, y, w, h)  # Find the central position
-
-        face_img = img_grey[y:y + h, x:x + w]  # Convert the image to grey-scale
-        face_img = transform.resize(face_img, (w, h))
-
-        # 2d-dct and truncate
-        face_dct = dct_2d(face_img)
-        face_x = face_dct[:retain, :retain].flatten().reshape((1, -1))
+    for position in faces:
+        face = Face(position, img_grey)
 
         # Check if we recognise the face
-        impostor = gmm.score(face_x) < thresh
+        impostor = gmm.score(face.features()) < thresh
 
         if not impostor:
-            pred_cls = clf.predict(face_x)[0]
+            pred_cls = clf.predict(face.features())[0]
             pred_name = names[pred_cls]
 
             if pred_name in positions:
-                positions[pred_name] = (centroid, int(time.time()), positions[pred_name][2])
+                positions[pred_name].update(face)
             else:
-                positions[pred_name] = (centroid, int(time.time()), 0)
+                positions[pred_name] = Person(face, pred_name)
 
         else:
             # FIXME We only add impostors to make it easier to test
             pred_name = "Impostor"
             if pred_name in positions:
-                positions[pred_name] = (centroid, int(time.time()), positions[pred_name][2])
+                positions[pred_name].update(face)
             else:
-                positions[pred_name] = (centroid, int(time.time()), 0)  # A new person
+                positions[pred_name] = Person(face, pred_name)  # A new person
 
-        matches.append((pred_name, (x, y, w, h), centroid))
+        matches.append((pred_name, face.shape(), face.centroid()))
 
     return matches
 
@@ -138,9 +123,9 @@ def process_frame(frame, face_counter):
 
     face_counter.update_count(matches, frame)
 
-    for (n1, t1), (n2, t2) in zip(positions.items(), old_positions.items()):
-        if (t1[0][1] > H / 2 > t2[0][1]) or (t1[0][1] < H / 2 < t2[0][1]):
-            print("{} crossed the line at {}".format(n1, t1[1]))
+    for (n1, person1), (n2, t2) in zip(positions.items(), old_positions.items()):
+        if (person1.shape.y > H / 2 > t2[0][1]) or (person1[0][1] < H / 2 < t2[0][1]):
+            print("{} crossed the line at {}".format(n1, person1[1]))
             # TODO Don't do this
             positions[n1] = (positions[n1][0], positions[n1][1], positions[n1][2] + 1)
 
