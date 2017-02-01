@@ -123,8 +123,11 @@ def process_frame(frame, face_counter):
 
     face_counter.update_count(matches, frame)
 
-    for (n1, person1), (n2, t2) in zip(positions.items(), old_positions.items()):
-        if (person1.shape.y > H / 2 > t2[0][1]) or (person1[0][1] < H / 2 < t2[0][1]):
+    for (n1, person), (n2, old_person) in zip(positions.items(), old_positions.items()):
+        # Check is person has crossed the line
+        cross_down = person.shape().y > H / 2 > old_person.shape().y
+        cross_up = person.shape().y < H / 2 < old_person.shape().y
+        if cross_down or cross_up:
             print("{} crossed the line at {}".format(n1, person1[1]))
             # TODO Don't do this
             positions[n1] = (positions[n1][0], positions[n1][1], positions[n1][2] + 1)
