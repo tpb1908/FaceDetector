@@ -33,7 +33,7 @@ CENTROID_COLOUR = (0, 0, 255)
 
 # Load cascade
 # Source: https://github.com/opencv/opencv/tree/master/data/haarcascades
-HAAR_CASCADE_FACE_XML = "/haarcascade_frontalface_default.xml"
+HAAR_CASCADE_FACE_XML = "/cascades/haarcascade_frontalface_default.xml"
 face_cascade = cv2.CascadeClassifier()
 assert face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML)
 
@@ -43,7 +43,7 @@ people = {}
 window_width, window_height = 100, 100
 
 retain = 8
-with open("face-model-clf2.pkl", "rb") as fh:
+with open("face-model.pkl", "rb") as fh:
     clf, gmm, thresh = Pickle.load(fh)
 
 names = {}
