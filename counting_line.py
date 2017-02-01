@@ -5,9 +5,6 @@ Created on Wed Oct 05 12:46:24 2016
 @author: johnsona15
 """
 
-# TODO Stop treating tuples like lists
-
-
 import cv2
 import os
 import glob
@@ -34,17 +31,16 @@ DIVIDER_COLOUR = (255, 255, 0)
 BOUNDING_BOX_COLOUR = (255, 0, 0)
 CENTROID_COLOUR = (0, 0, 255)
 
-# https://github.com/opencv/opencv/tree/master/data/haarcascades
+# Load cascade
+# Source: https://github.com/opencv/opencv/tree/master/data/haarcascades
 HAAR_CASCADE_FACE_XML = "/haarcascade_frontalface_default.xml"
-
 face_cascade = cv2.CascadeClassifier()
 assert face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML)
 
+# Map of names to active persons
+people = {}
 
-positions = {}  # For the current frame
-old_positions = {}  # To dif against
-
-W, H = 100, 100
+window_width, window_height = 100, 100
 
 retain = 8
 with open("face-model-clf2.pkl", "rb") as fh:
@@ -58,59 +54,54 @@ for idx, f_dir in enumerate(glob.glob("person_*")):
 
 cap = cv2.VideoCapture()
 
-def detect_faces():
-    ret, img = cap.read()
-    img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(img_grey, 1.3, 5)
+def detect_faces(frame):
+    # Detect face positions in frame
+    img_grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # possibly add minSize=(200, 200)
+    faces = face_cascade.detectMultiScale(img_grey, 1.3, 5)
+    
     matches = []
-    global old_positions
-    old_positions = positions.copy()  # Copy previous values
     for position in faces:
         face = Face(position, img_grey)
         
         # Check if we recognise the face
         impostor = gmm.score(face.features()) < thresh
 
+        # Get the name of the face
+        pred_name = "Impostor"
         if not impostor:
             pred_cls = clf.predict(face_x)[0]
             pred_name = names[pred_cls]
 
-            if pred_name in positions:
-                positions[pred_name].update(face)
-            else:
-                positions[pred_name] = Person(face, pred_name)
-
+        # Update (or create) the person
+        if pred_name in people:
+            people[pred_name].update(face)
         else:
-            # FIXME We only add impostors to make it easier to test
-            pred_name = "Impostor"
-            if pred_name in positions:
-                positions[pred_name].update(face)
-            else:
-                positions[pred_name] = Person(face, pred_name)
+            people[pred_name] = Person(face, pred_name)
 
-        matches.append((pred_name, face))
+        # Add them to the list of matches
+        matches.append(people[pred_name])
 
     return matches
 
 
-def process_frame(frame, face_counter):
+def process_frame(frame):
     # Draw the boundary line
     # TODO Make the position optional so that we can detect line crossing anywhere, or multiple lines
-    cv2.line(frame, (0, face_counter.divider), (frame.shape[1], face_counter.divider), DIVIDER_COLOUR, 1)
+    cv2.line(frame, (0, window_height / 2), (window_width, window_height / 2), DIVIDER_COLOUR, 1)
 
-    matches = detect_faces()
-    for (i, match) in enumerate(matches):
-        name, face = match
-        shape = face.shape()
+    matches = detect_faces(frame)
+    for person in matches:
+        shape = person.shape()
 
         # Mark the bounding box and the centroid on the processed frame
         cv2.rectangle(frame, (shape.x, shape.y), (shape.x + shape.width - 1, shape.y + shape.height - 1), BOUNDING_BOX_COLOUR, 1)
-        cv2.circle(frame, face.centroid(), 2, CENTROID_COLOUR, -1)
+        cv2.circle(frame, person.centroid(), 2, CENTROID_COLOUR, -1)
 
-        if name in positions:
+        name = person.name()
+        if name in people:
             cv2.putText(
-                frame, "{} {}".format(name, positions[name].shape().y), (shape.x, shape.y - 5),
+                frame, "{} {}".format(name, people[name].shape().y), (shape.x, shape.y - 5),
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
         else:
             # Person is new
@@ -118,55 +109,43 @@ def process_frame(frame, face_counter):
                 frame, "{}".format(name), (x, y - 5),
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 
-    face_counter.update_count(matches, frame)
-
-    for (n1, person), (n2, old_person) in zip(positions.items(), old_positions.items()):
-        # Check is person has crossed the line
-        if person.has_crossed(H / 2):
-            print("{} crossed the line".format(n1))
+    # Check if person has crossed the line
+    for (name, person) in people.items():
+        if person.has_crossed(window_height / 2):
+            print("{} crossed the line".format(name))
             person.count()
 
-    # We search for people that we haven't detected for 3 seconds
-    for (n, person) in positions.items():
+    # Remove people that we haven't detected for 3 seconds
+    for (name, person) in people.items():
         if not person.active():
             print("deleting")
-            del positions[n]
+            del people[name]
+    
     return frame
 
-
 def main():
-    face_counter = None  # Will be created after first frame is captured
-    # Set up image source
+    # Open webcam
     assert cap.open(0)
-
-    global W, H
-
+    
     while cap.isOpened():
+        # Get next frame
         ret, frame = cap.read()
-        W, H = tuple(frame.shape[1::-1])  # Get the width and height of the frame
-        # print("H {} W {}".format(H, W))
-        if not ret:
-            print("Error")
-            break
+        assert ret
 
-        if face_counter is None:
-            # We do this here, so that we can initialize with actual frame size
-            face_counter = FaceCounter(frame.shape[:2], frame.shape[0] / 2)
-
-        processed_frame = process_frame(frame, face_counter)
+        # Get the width and height of the window
+        global window_width, window_height
+        window_width, window_height = tuple(frame.shape[1::-1])  
+        
+        processed_frame = process_frame(frame)
         cv2.imshow('Processed Image', processed_frame)
 
-        k = cv2.waitKey(33)
         # TODO: Sort key input out 
+        k = cv2.waitKey(33)
         # Escape
         if k == 27:
             cap.release()
 
-    # Apparently CV2 windows are a bit shit, and so we have to try waitKey a few times for the window to close
-    cv2.waitKey(1)
+    # Clean up window
     cv2.destroyAllWindows()
-    for i in range(1, 5):
-        cv2.waitKey(1)
-
 
 main()

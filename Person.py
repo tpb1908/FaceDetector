@@ -36,3 +36,6 @@ class Person(object):
 
     def count(self):
         self._count += 1
+
+    def name(self):
+        return self._name
