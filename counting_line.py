@@ -56,9 +56,7 @@ names = {}
 for idx, f_dir in enumerate(glob.glob("person_*")):
     names[idx] = f_dir.split("_")[1]
 
-
 cap = cv2.VideoCapture()
-
 
 def detect_faces():
     ret, img = cap.read()
@@ -70,12 +68,12 @@ def detect_faces():
     old_positions = positions.copy()  # Copy previous values
     for position in faces:
         face = Face(position, img_grey)
-
+        
         # Check if we recognise the face
         impostor = gmm.score(face.features()) < thresh
 
         if not impostor:
-            pred_cls = clf.predict(face.features())[0]
+            pred_cls = clf.predict(face_x)[0]
             pred_name = names[pred_cls]
 
             if pred_name in positions:
@@ -89,7 +87,7 @@ def detect_faces():
             if pred_name in positions:
                 positions[pred_name].update(face)
             else:
-                positions[pred_name] = Person(face, pred_name)  # A new person
+                positions[pred_name] = Person(face, pred_name)
 
         matches.append((pred_name, face))
 
@@ -124,16 +122,14 @@ def process_frame(frame, face_counter):
 
     for (n1, person), (n2, old_person) in zip(positions.items(), old_positions.items()):
         # Check is person has crossed the line
-        cross_down = person.shape().y > H / 2 > old_person.shape().y
-        cross_up = person.shape().y < H / 2 < old_person.shape().y
-        if cross_down or cross_up:
-            print("{} crossed the line at {}".format(n1, person1[1]))
-            # TODO Don't do this
-            positions[n1] = (positions[n1][0], positions[n1][1], positions[n1][2] + 1)
+        if person.has_crossed(H / 2):
+            print("{} crossed the line".format(n1))
+            person.count()
 
     # We search for people that we haven't detected for 3 seconds
     for (n, person) in positions.items():
-        if person.shape().x + 3 < int(time.time()):
+        if not person.active():
+            print("deleting")
             del positions[n]
     return frame
 
