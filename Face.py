@@ -1,9 +1,11 @@
 from skimage import transform
 from scipy.fftpack import dct
+from collections import namedtuple
 
 class Face(object):
     RETAIN = 8
-  
+    Position = namedtuple('Position', ['x', 'y', 'width', 'height'])
+    
     def __init__(self, (x, y, width, height), image):
         self._x = x
         self._y = y
@@ -26,5 +28,5 @@ class Face(object):
         return self._features
 
     def shape(self):
-        return (x:self._x, y:self._y, w:self._width, h:self._height)
+        return Position(self._x, self._y, self._width, self._height)
 
