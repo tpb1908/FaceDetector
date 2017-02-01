@@ -17,14 +17,17 @@ import cPickle as Pickle
 import time
 import warnings
 from FaceCounter import *
+
 from Face import Face
+from Person import Person
 
+DEBUG = False
 
+# Disable deprecation warning
 def warn(*args, **kwargs):
     pass
-
-warnings.warn = warn
-
+if not DEBUG:
+    warnings.warn = warn
 
 # Colours for drawing on processed frames
 DIVIDER_COLOUR = (255, 255, 0)
@@ -33,8 +36,6 @@ CENTROID_COLOUR = (0, 0, 255)
 
 # https://github.com/opencv/opencv/tree/master/data/haarcascades
 HAAR_CASCADE_FACE_XML = "/haarcascade_frontalface_default.xml"
-
-print os.getcwd() + HAAR_CASCADE_FACE_XML
 
 face_cascade = cv2.CascadeClassifier()
 assert face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML)
@@ -60,7 +61,6 @@ cap = cv2.VideoCapture()
 
 
 def detect_faces():
-
     ret, img = cap.read()
     img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(img_grey, 1.3, 5)
@@ -91,32 +91,31 @@ def detect_faces():
             else:
                 positions[pred_name] = Person(face, pred_name)  # A new person
 
-        matches.append((pred_name, face.shape(), face.centroid()))
+        matches.append((pred_name, face))
 
     return matches
 
 
 def process_frame(frame, face_counter):
-
     # Draw the boundary line
     # TODO Make the position optional so that we can detect line crossing anywhere, or multiple lines
     cv2.line(frame, (0, face_counter.divider), (frame.shape[1], face_counter.divider), DIVIDER_COLOUR, 1)
 
     matches = detect_faces()
     for (i, match) in enumerate(matches):
-        name, face, centroid = match
-
-        x, y, w, h = face
+        name, face = match
+        shape = face.shape()
 
         # Mark the bounding box and the centroid on the processed frame
-        cv2.rectangle(frame, (x, y), (x + w - 1, y + h - 1), BOUNDING_BOX_COLOUR, 1)
-        cv2.circle(frame, centroid, 2, CENTROID_COLOUR, -1)
+        cv2.rectangle(frame, (shape.x, shape.y), (shape.x + shape.width - 1, shape.y + shape.height - 1), BOUNDING_BOX_COLOUR, 1)
+        cv2.circle(frame, face.centroid(), 2, CENTROID_COLOUR, -1)
 
         if name in positions:
             cv2.putText(
-                frame, "{} {}".format(name, positions[name][2]), (x, y - 5),
+                frame, "{} {}".format(name, positions[name].shape().y), (shape.x, shape.y - 5),
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
-        else:  # If the person is new
+        else:
+            # Person is new
             cv2.putText(
                 frame, "{}".format(name), (x, y - 5),
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
@@ -133,8 +132,8 @@ def process_frame(frame, face_counter):
             positions[n1] = (positions[n1][0], positions[n1][1], positions[n1][2] + 1)
 
     # We search for people that we haven't detected for 3 seconds
-    for (n, c) in positions.items():
-        if c[1] + 3 < int(time.time()):
+    for (n, person) in positions.items():
+        if person.shape().x + 3 < int(time.time()):
             del positions[n]
     return frame
 
@@ -158,11 +157,13 @@ def main():
             # We do this here, so that we can initialize with actual frame size
             face_counter = FaceCounter(frame.shape[:2], frame.shape[0] / 2)
 
-        cv2.imshow('Processed Image', process_frame(frame, face_counter))
+        processed_frame = process_frame(frame, face_counter)
+        cv2.imshow('Processed Image', processed_frame)
 
         k = cv2.waitKey(33)
-        if k != -1:
-            # Escape
+        # TODO: Sort key input out 
+        # Escape
+        if k == 27:
             cap.release()
 
     # Apparently CV2 windows are a bit shit, and so we have to try waitKey a few times for the window to close
