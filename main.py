@@ -8,15 +8,19 @@ Created on Wed Oct 05 12:46:24 2016
 import cv2
 import os
 import glob
+import time
+import warnings
+
 from skimage import transform
 from scipy.fftpack import dct
 import cPickle as Pickle
-import time
-import warnings
-from FaceCounter import *
+
+import Tkinter as tk
+from PIL import Image, ImageTk
 
 from Face import Face
 from Person import Person
+from Webcam import Webcam
 
 DEBUG = False
 
@@ -40,7 +44,8 @@ assert face_cascade.load(os.getcwd() + HAAR_CASCADE_FACE_XML)
 # Map of names to active persons
 people = {}
 
-window_width, window_height = 100, 100
+window = tk.Tk()
+webcam = Webcam(window)
 
 retain = 8
 with open("face-model.pkl", "rb") as fh:
@@ -51,8 +56,6 @@ names = {}
 # Loading the people that we have enrolled
 for idx, f_dir in enumerate(glob.glob("person_*")):
     names[idx] = f_dir.split("_")[1]
-
-cap = cv2.VideoCapture()
 
 def detect_faces(frame):
     # Detect face positions in frame
@@ -88,7 +91,7 @@ def detect_faces(frame):
 def process_frame(frame):
     # Draw the boundary line
     # TODO Make the position optional so that we can detect line crossing anywhere, or multiple lines
-    cv2.line(frame, (0, window_height / 2), (window_width, window_height / 2), DIVIDER_COLOUR, 1)
+    cv2.line(frame, (0, webcam.height() / 2), (webcam.width(), webcam.height() / 2), DIVIDER_COLOUR, 1)
 
     matches = detect_faces(frame)
     for person in matches:
@@ -111,7 +114,7 @@ def process_frame(frame):
 
     # Check if person has crossed the line
     for (name, person) in people.items():
-        if person.has_crossed(window_height / 2):
+        if person.has_crossed(webcam.height() / 2):
             print("{} crossed the line".format(name))
             person.count()
 
@@ -123,29 +126,33 @@ def process_frame(frame):
     
     return frame
 
+def recolor(frame):
+    return cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+
+def loop():
+    webcam.render()
+    window.after(10, loop)
+
 def main():
-    # Open webcam
-    assert cap.open(0)
+    # Added window quit shortcut
+    window.bind('<Escape>', lambda e: window.quit())
     
-    while cap.isOpened():
-        # Get next frame
-        ret, frame = cap.read()
-        assert ret
+    # Create toolbar
+    toolbar = tk.Menu(window)
+    window.config(menu=toolbar)
+    
+    # Setup webcam menu
+    webcam_menu = tk.Menu(toolbar)
+    webcam_menu.add_command(label="Open", command=webcam.open)
+    webcam_menu.add_command(label="Close", command=webcam.close)
+    toolbar.add_cascade(label="Webcam", menu=webcam_menu)
 
-        # Get the width and height of the window
-        global window_width, window_height
-        window_width, window_height = tuple(frame.shape[1::-1])  
-        
-        processed_frame = process_frame(frame)
-        cv2.imshow('Processed Image', processed_frame)
-
-        # TODO: Sort key input out 
-        k = cv2.waitKey(33)
-        # Escape
-        if k == 27:
-            cap.release()
-
-    # Clean up window
-    cv2.destroyAllWindows()
+    # Add filters to webcam
+    webcam.add_filter(process_frame)
+    webcam.add_filter(recolor)
+    
+    # Start window
+    loop()
+    window.mainloop()
 
 main()

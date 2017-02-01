@@ -2,8 +2,8 @@
 
 ## Install
 ```
+sudo apt-get install python-opencv python-tk python-imaging python-imaging-tk libjpeg libjpeg-dev libfreetype6 libfreetype6-dev zlib1g-dev
 sudo pip2 install -r requirements.txt
-sudo apt-get install python-opencv python-tk
 ```
 
 ## Use
