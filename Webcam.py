@@ -4,6 +4,8 @@ import numpy as np
 import Tkinter as tk
 from PIL import Image, ImageTk
 
+from filters.Filter import Filter
+
 class Webcam(object):
     def __init__(self, root):
         # Setup widget
@@ -26,13 +28,16 @@ class Webcam(object):
         self._capture.release()
 
     def add_filter(self, filter):
+        if not isinstance(filter, Filter): 
+            print("Filter is not a filter")
+            return 
         self._filters.append(filter)
 
     def render(self):
         if not self._widget == None:
             frame = self.frame()
             for filter in self._filters:
-                frame = filter(frame)
+                frame = filter.apply(frame)
 
             image = Image.fromarray(frame)
             tkimage = ImageTk.PhotoImage(image=image)

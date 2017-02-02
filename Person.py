@@ -34,8 +34,11 @@ class Person(object):
     def active(self):
         return self._last_seen + 3 > time.time()
 
-    def count(self):
+    def increment(self):
         self._count += 1
+
+    def count(self):
+        return self._count
 
     def name(self):
         return self._name
