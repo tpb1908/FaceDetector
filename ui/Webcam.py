@@ -17,8 +17,9 @@ class Webcam(object):
 
         self._capture = cv2.VideoCapture()
         self.open()
-
-        # Get width and height of webcam frame
+        
+    def _set_size(self):
+        # Sets the width and height of webcam frame
         ret, frame = self._capture.read()
         if not ret:
             print("Error getting frame size, couldnt read frame")
@@ -27,9 +28,10 @@ class Webcam(object):
         frame_size = frame.shape[1::-1]
         self._width = frame_size[0]
         self._height = frame_size[1]
-        
-    def open(self):
-        assert self._capture.open(0)
+
+    def open(self, value=0):
+        assert self._capture.open(value)
+        self._set_size()
 
     def close(self):
         self._capture.release()

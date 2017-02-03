@@ -54,6 +54,7 @@ class FaceDetector(object):
         # Setup webcam menu
         webcam_menu = tk.Menu(toolbar)
         webcam_menu.add_command(label="Open", command=self.webcam.open)
+        webcam_menu.add_command(label="Video", command=lambda: self.webcam.open('data/Sample.mp4'))
         webcam_menu.add_command(label="Close", command=self.webcam.close)
         toolbar.add_cascade(label="Webcam", menu=webcam_menu)
 
@@ -76,8 +77,6 @@ class FaceDetector(object):
                 onvalue=True, 
                 offvalue=False)
         toolbar.add_cascade(label="Filters", menu=filter_menu)
-
-
 
         # Setup detector menu
         detector_menu = tk.Menu(toolbar)
