@@ -16,7 +16,7 @@ class CountingLine(Filter):
     BOUNDING_BOX_COLOUR = (255, 0, 0)
     CENTROID_COLOUR = (0, 0, 255)
 
-    def __init__ (self, width, height):
+    def __init__(self, width, height):
         super(CountingLine, self).__init__(width, height)
 
         self.people = {}
@@ -24,7 +24,7 @@ class CountingLine(Filter):
         # Loading the people that we have enrolled
         self.names = {}
         for idx, f_dir in enumerate(glob.glob("person_*")):
-            names[idx] = f_dir.split("_")[1]
+            self.names[idx] = f_dir.split("_")[1]
 
         # Load cascade
         self.face_cascade = cv2.CascadeClassifier()
@@ -34,7 +34,6 @@ class CountingLine(Filter):
         # Load face model
         with open("face-model.pkl", "rb") as fh:
             self.clf, self.gmm, self.thresh = Pickle.load(fh)
-        
 
     def apply(self, frame):
         # Draw the boundary line
@@ -70,12 +69,12 @@ class CountingLine(Filter):
         # Remove people that we haven't detected for 3 seconds
         for (name, person) in self.people.items():
             if not person.active():
-                print("deleting")
+                print("Deleting " + name)
                 del self.people[name]
         
         return frame
         
-    def detect_faces(self,frame): 
+    def detect_faces(self, frame):
         # Detect face positions in frame
         img_grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # possibly add minSize=(200, 200)
@@ -91,8 +90,8 @@ class CountingLine(Filter):
             # Get the name of the face
             pred_name = "Impostor"
             if not impostor:
-                pred_cls = clf.predict(face_x)[0]
-                pred_name = names[pred_cls]
+                pred_cls = self.clf.predict(face.features())[0]
+                pred_name = self.names[pred_cls]
 
             # Update (or create) the person
             if pred_name in self.people:

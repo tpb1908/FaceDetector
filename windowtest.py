@@ -12,6 +12,7 @@ root.bind('<Escape>', lambda e: root.quit())
 lmain = tk.Label(root)
 lmain.pack()
 
+
 def show_frame():
     _, frame = cap.read()
     frame = cv2.flip(frame, 1)

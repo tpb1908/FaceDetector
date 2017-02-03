@@ -13,4 +13,3 @@ class Filter(object):
 
     def height(self):
         return self._height
-    

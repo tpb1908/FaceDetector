@@ -6,7 +6,9 @@ from PIL import Image, ImageTk
 
 from filters.Filter import Filter
 
+
 class Webcam(object):
+
     def __init__(self, root):
         # Setup widget
         self._root = root
@@ -34,7 +36,7 @@ class Webcam(object):
         self._filters.append(filter)
 
     def render(self):
-        if not self._widget == None:
+        if self._widget is not None:
             frame = self.frame()
             for filter in self._filters:
                 frame = filter.apply(frame)

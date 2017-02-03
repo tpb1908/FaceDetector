@@ -5,27 +5,16 @@ Created on Wed Oct 05 12:46:24 2016
 @author: johnsona15
 """
 
-import cv2
-import os
-import glob
-import time
 import warnings
-
-from skimage import transform
-from scipy.fftpack import dct
-import cPickle as Pickle
-
 import Tkinter as tk
-from PIL import Image, ImageTk
 
-from Face import Face
-from Person import Person
 from Webcam import Webcam
 
 from filters.CountingLine import CountingLine
 from filters.Recolour import Recolour
 
 DEBUG = False
+
 
 # Disable deprecation warning
 def warn(*args, **kwargs):
@@ -37,9 +26,11 @@ if not DEBUG:
 window = tk.Tk()
 webcam = Webcam(window)
 
+
 def loop():
     webcam.render()
     window.after(10, loop)
+
 
 def main():
     # Added window quit shortcut
@@ -58,7 +49,6 @@ def main():
     # Add filters to webcam
     webcam.add_filter(CountingLine(webcam.width(), webcam.height()))
     webcam.add_filter(Recolour(webcam.width(), webcam.height()))
-    
 
     # Start window
     loop()

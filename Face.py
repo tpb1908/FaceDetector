@@ -2,6 +2,7 @@ from skimage import transform
 from scipy.fftpack import dct
 from collections import namedtuple
 
+
 class Face(object):
     RETAIN = 8
     Position = namedtuple('Position', ['x', 'y', 'width', 'height'])

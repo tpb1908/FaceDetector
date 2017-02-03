@@ -2,6 +2,7 @@ from cv2 import cvtColor, COLOR_BGR2RGBA
 
 from Filter import Filter
 
+
 class Recolour(Filter):
 
     def __init__(self, width, height):
