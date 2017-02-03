@@ -20,21 +20,25 @@ class FaceDetector(object):
     def __init__(self):
         self.window = tk.Tk()
         self.webcam = Webcam(self.window)
-        self.filters = [
-            CountingLine(self.webcam.width(), self.webcam.height()), 
-            Recolour(self.webcam.width(), self.webcam.height())
-        ]
+        self.filters = {
+            CountingLine.NAME: CountingLine(self.webcam.width(), self.webcam.height()), 
+            Recolour.NAME: Recolour(self.webcam.width(), self.webcam.height())
+        }
+        self.active_filters = [CountingLine.NAME, Recolour.NAME]
 
     def loop(self):
         frame, webcam_open = self.webcam.next_frame()
         
         # Apply filters
         if webcam_open:
-            for filter in self.filters:
-                frame = filter.apply(frame)
+            for filter_name in self.active_filters:
+                frame = self.filters[filter_name].apply(frame)
     
         self.webcam.render(frame)
         self.window.after(10, self.loop)
+
+    def toggle_filter(self, name):
+        return lambda: self.active_filters.remove(name) if name in self.active_filters else self.active_filters.append(name) 
 
     def run(self):
         # Added window quit shortcut
@@ -49,6 +53,12 @@ class FaceDetector(object):
         webcam_menu.add_command(label="Open", command=self.webcam.open)
         webcam_menu.add_command(label="Close", command=self.webcam.close)
         toolbar.add_cascade(label="Webcam", menu=webcam_menu)
+
+        # Setup filter menu
+        filter_menu = tk.Menu(toolbar)
+        for name in self.filters:
+            filter_menu.add_command(label=name, command=self.toggle_filter(name))
+        toolbar.add_cascade(label="Filters", menu=filter_menu)
 
         # Start window
         self.loop()

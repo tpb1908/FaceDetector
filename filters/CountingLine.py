@@ -17,8 +17,10 @@ class CountingLine(Filter):
     BOUNDING_BOX_COLOUR = (255, 0, 0)
     CENTROID_COLOUR = (0, 0, 255)
 
+    NAME = "Counting Line"
+
     def __init__(self, width, height):
-        super(CountingLine, self).__init__(width, height)
+        super(CountingLine, self).__init__(width, height, CountingLine.NAME)
 
         self.people = {}
 
