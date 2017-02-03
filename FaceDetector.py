@@ -12,6 +12,8 @@ from ui.Webcam import Webcam
 from filters.CountingLine import CountingLine
 from filters.Recolour import Recolour
 
+from sense.Cv2Recognition import Cv2Recognition
+
 import warnings
 
 class FaceDetector(object):
@@ -20,9 +22,11 @@ class FaceDetector(object):
     def __init__(self):
         self.window = tk.Tk()
         self.webcam = Webcam(self.window)
-        
+
+        self.sense = Cv2Recognition()
+
         self.filters = {
-            CountingLine.NAME: CountingLine(self.webcam.width(), self.webcam.height()), 
+            CountingLine.NAME: CountingLine(self.webcam.width(), self.webcam.height(), self.sense),
             Recolour.NAME: Recolour(self.webcam.width(), self.webcam.height())
         }
         self.active_filters = [CountingLine.NAME, Recolour.NAME]
