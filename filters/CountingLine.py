@@ -40,9 +40,12 @@ class CountingLine(Filter):
         # Draw the boundary line
         # TODO Make the position optional so that we can detect line crossing anywhere, or multiple lines
         filter = super(CountingLine, self)
-        cv2.line(frame, (0, filter.height() / 2), (filter.width(), filter.height() / 2), CountingLine.DIVIDER_COLOUR, 1)
 
         matches = self.detect_faces(frame)
+
+        cv2.line(frame, (0, filter.height() / 2), (filter.width(), filter.height() / 2),
+                     CountingLine.DIVIDER_COLOUR, 1)
+
         for person in matches:
             shape = person.shape()
 

@@ -38,8 +38,9 @@ class Webcam(object):
     def render(self):
         if self._widget is not None:
             frame = self.frame()
-            for filter in self._filters:
-                frame = filter.apply(frame)
+            if self.is_open():
+                for filter in self._filters:
+                    frame = filter.apply(frame)
 
             image = Image.fromarray(frame)
             tkimage = ImageTk.PhotoImage(image=image)
