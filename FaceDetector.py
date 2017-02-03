@@ -20,10 +20,20 @@ class FaceDetector(object):
     def __init__(self):
         self.window = tk.Tk()
         self.webcam = Webcam(self.window)
-
+        self.filters = [
+            CountingLine(self.webcam.width(), self.webcam.height()), 
+            Recolour(self.webcam.width(), self.webcam.height())
+        ]
 
     def loop(self):
-        self.webcam.render()
+        frame, webcam_open = self.webcam.next_frame()
+        
+        # Apply filters
+        if webcam_open:
+            for filter in self.filters:
+                frame = filter.apply(frame)
+    
+        self.webcam.render(frame)
         self.window.after(10, self.loop)
 
     def run(self):
@@ -39,10 +49,6 @@ class FaceDetector(object):
         webcam_menu.add_command(label="Open", command=self.webcam.open)
         webcam_menu.add_command(label="Close", command=self.webcam.close)
         toolbar.add_cascade(label="Webcam", menu=webcam_menu)
-
-        # Add filters to webcam
-        self.webcam.add_filter(CountingLine(self.webcam.width(), self.webcam.height()))
-        self.webcam.add_filter(Recolour(self.webcam.width(), self.webcam.height()))
 
         # Start window
         self.loop()
