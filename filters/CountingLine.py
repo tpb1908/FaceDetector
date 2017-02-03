@@ -7,6 +7,7 @@ from Filter import Filter
 from Face import Face
 from Person import Person
 
+
 class CountingLine(Filter):
     # Source: https://github.com/opencv/opencv/tree/master/data/haarcascades
     HAAR_CASCADE_FACE_XML = "/cascades/haarcascade_frontalface_default.xml"
@@ -46,7 +47,11 @@ class CountingLine(Filter):
             shape = person.shape()
 
             # Mark the bounding box and the centroid on the processed frame
-            cv2.rectangle(frame, (shape.x, shape.y), (shape.x + shape.width - 1, shape.y + shape.height - 1), CountingLine.BOUNDING_BOX_COLOUR, 1)
+            cv2.rectangle(frame,
+                          (shape.x, shape.y),
+                          (shape.x + shape.width - 1, shape.y + shape.height - 1),
+                          CountingLine.BOUNDING_BOX_COLOUR,
+                          1)
             cv2.circle(frame, person.centroid(), 2, CountingLine.CENTROID_COLOUR, -1)
 
             name = person.name()
@@ -57,7 +62,7 @@ class CountingLine(Filter):
             else:
                 # Person is new
                 cv2.putText(
-                    frame, "{}".format(name), (x, y - 5),
+                    frame, "{}".format(name), (shape.x, shape.y - 5),
                     cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 
         # Check if person has crossed the line
