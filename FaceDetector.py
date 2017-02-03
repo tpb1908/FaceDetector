@@ -7,7 +7,7 @@ Created on Wed Oct 05 12:46:24 2016
 
 import Tkinter as tk
 
-from Webcam import Webcam
+from ui.Webcam import Webcam
 
 from filters.CountingLine import CountingLine
 from filters.Recolour import Recolour
@@ -20,6 +20,7 @@ class FaceDetector(object):
     def __init__(self):
         self.window = tk.Tk()
         self.webcam = Webcam(self.window)
+        
         self.filters = {
             CountingLine.NAME: CountingLine(self.webcam.width(), self.webcam.height()), 
             Recolour.NAME: Recolour(self.webcam.width(), self.webcam.height())

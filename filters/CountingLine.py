@@ -35,7 +35,7 @@ class CountingLine(Filter):
         assert self.face_cascade.load(os.getcwd() + CountingLine.HAAR_CASCADE_FACE_XML)
         
         # Load face model
-        with open("face-model.pkl", "rb") as fh:
+        with open("data/face-model.pkl", "rb") as fh:
             self.clf, self.gmm, self.thresh = Pickle.load(fh)
 
     def apply(self, frame):
