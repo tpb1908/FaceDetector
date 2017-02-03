@@ -2,14 +2,12 @@ import glob
 import os
 import cPickle as Pickle
 
-from sense.detectors.Cv2Detector import Cv2Detector 
-from sense.detectors.DlibDetector import DlibDetector
 from sense.Person import Person
 
 class Cv2Recognition(object):
     
-    def __init__(self):
-        self._detection = DlibDetector()
+    def __init__(self, detector):
+        self._detection = detector
 
         # Map of names to active people
         self._people = {}
@@ -24,6 +22,9 @@ class Cv2Recognition(object):
         # Load face model
         with open("data/face-model.pkl", "rb") as fh:
             self.clf, self.gmm, self.thresh = Pickle.load(fh)
+
+    def set_detector(self, detector):
+        self._detection = detector
 
     def proccess_frame(self, frame):
         self._live_people = {}

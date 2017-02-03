@@ -13,6 +13,8 @@ from filters.CountingLine import CountingLine
 from filters.Recolour import Recolour
 
 from sense.Cv2Recognition import Cv2Recognition
+from sense.detectors.Cv2Detector import Cv2Detector 
+from sense.detectors.DlibDetector import DlibDetector
 
 import warnings
 
@@ -23,7 +25,7 @@ class FaceDetector(object):
         self.window = tk.Tk()
         self.webcam = Webcam(self.window)
 
-        self.sense = Cv2Recognition()
+        self.sense = Cv2Recognition(Cv2Detector())
 
         self.filters = {
             CountingLine.NAME: CountingLine(self.webcam.width(), self.webcam.height(), self.sense),
@@ -45,6 +47,9 @@ class FaceDetector(object):
     def toggle_filter(self, name):
         return lambda: self.active_filters.remove(name) if name in self.active_filters else self.active_filters.append(name) 
 
+    def set_detector(self, detector):
+        return lambda: self.sense.set_detector(detector)
+
     def run(self):
         # Added window quit shortcut
         self.window.bind('<Escape>', lambda e: self.window.quit())
@@ -64,6 +69,12 @@ class FaceDetector(object):
         for name in self.filters:
             filter_menu.add_command(label=name, command=self.toggle_filter(name))
         toolbar.add_cascade(label="Filters", menu=filter_menu)
+
+        # Setup detector menu
+        detector_menu = tk.Menu(toolbar)
+        detector_menu.add_command(label="cv2", command=self.set_detector(Cv2Detector()))
+        detector_menu.add_command(label="dlib", command=self.set_detector(DlibDetector()))
+        toolbar.add_cascade(label="Detectors", menu=detector_menu)
 
         # Start window
         self.loop()
