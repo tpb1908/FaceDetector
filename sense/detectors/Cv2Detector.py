@@ -2,15 +2,18 @@ import cv2
 import os
 
 from sense.Face import Face
+from sense.detectors.Detector import Detector
 
-class Cv2Detection(object):
+class Cv2Detector(Detector):
     # Source: https://github.com/opencv/opencv/tree/master/data/haarcascades
     HAAR_CASCADE_FACE_XML = "/cascades/haarcascade_frontalface_default.xml"
 
     def __init__(self):
+        super(Cv2Detector, self).__init__()
+        
         # Load cascade
         self.face_cascade = cv2.CascadeClassifier()
-        assert self.face_cascade.load(os.getcwd() + Cv2Detection.HAAR_CASCADE_FACE_XML)
+        assert self.face_cascade.load(os.getcwd() + Cv2Detector.HAAR_CASCADE_FACE_XML)
         
     def get_faces(self, frame):
         # Get face positions
