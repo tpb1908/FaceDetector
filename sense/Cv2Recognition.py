@@ -2,14 +2,13 @@ import glob
 import os
 import cPickle as Pickle
 
-from sense.Detection import Detection 
-
-from Person import Person
+from sense.Cv2Detection import Cv2Detection 
+from sense.Person import Person
 
 class Cv2Recognition(object):
     
     def __init__(self):
-        self._detection = Detection()
+        self._detection = Cv2Detection()
 
         # Map of names to active people
         self._people = {}

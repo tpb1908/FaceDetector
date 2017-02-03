@@ -1,7 +1,8 @@
 import cv2
 
-from Filter import Filter
-from Person import Person
+from filters.Filter import Filter
+
+from sense.Person import Person
 
 class CountingLine(Filter):
     # Colours for drawing on processed frames

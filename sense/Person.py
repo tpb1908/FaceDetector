@@ -1,6 +1,5 @@
 import time
 
-
 class Person(object):
     def __init__(self, face, name):
         self._prev_face = face
