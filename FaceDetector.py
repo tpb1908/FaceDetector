@@ -48,11 +48,12 @@ class FaceDetector(object):
         self.loop()
         self.window.mainloop()
 
-# Disable deprecation warning
-def warn(*args, **kwargs):
-    pass
-if not FaceDetector.DEBUG:
-    warnings.warn = warn
+if __name__ == "__main__":
+    # Disable deprecation warning
+    def warn(*args, **kwargs):
+        pass
+    if not FaceDetector.DEBUG:
+        warnings.warn = warn
 
-# Run the program
-FaceDetector().run()
+    # Run the program
+    FaceDetector().run()
