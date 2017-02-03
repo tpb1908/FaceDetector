@@ -7,20 +7,21 @@ from Filter import Filter
 from Face import Face
 from Person import Person
 
+from recognition.Detection import Detection
 
 class CountingLine(Filter):
-    # Source: https://github.com/opencv/opencv/tree/master/data/haarcascades
-    HAAR_CASCADE_FACE_XML = "/cascades/haarcascade_frontalface_default.xml"
-
     # Colours for drawing on processed frames
     DIVIDER_COLOUR = (255, 255, 0)
     BOUNDING_BOX_COLOUR = (255, 0, 0)
     CENTROID_COLOUR = (0, 0, 255)
 
+    # Filter name
     NAME = "Counting Line"
 
     def __init__(self, width, height):
         super(CountingLine, self).__init__(width, height, CountingLine.NAME)
+
+        self.detection = Detection()
 
         self.people = {}
 
@@ -29,11 +30,6 @@ class CountingLine(Filter):
         for idx, f_dir in enumerate(glob.glob("person_*")):
             self.names[idx] = f_dir.split("_")[1]
 
-        # Load cascade
-        self.face_cascade = cv2.CascadeClassifier()
-        print(str(os.getcwd() + CountingLine.HAAR_CASCADE_FACE_XML))
-        assert self.face_cascade.load(os.getcwd() + CountingLine.HAAR_CASCADE_FACE_XML)
-        
         # Load face model
         with open("data/face-model.pkl", "rb") as fh:
             self.clf, self.gmm, self.thresh = Pickle.load(fh)
@@ -84,16 +80,10 @@ class CountingLine(Filter):
         
         return frame
         
+    # Detect face positions in frame
     def detect_faces(self, frame):
-        # Detect face positions in frame
-        img_grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # possibly add minSize=(200, 200)
-        faces = self.face_cascade.detectMultiScale(img_grey, 1.3, 5)
-        
         matches = []
-        for position in faces:
-            face = Face(position, img_grey)
-            
+        for face in self.detection.get_faces(frame):
             # Check if we recognise the face
             impostor = self.gmm.score(face.features()) < self.thresh
 
