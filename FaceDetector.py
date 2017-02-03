@@ -77,14 +77,22 @@ class FaceDetector(object):
                 offvalue=False)
         toolbar.add_cascade(label="Filters", menu=filter_menu)
 
-        # Detector menu callback
-        def set_detector(detector):
-            return lambda: self.sense.set_detector(detector)
+
 
         # Setup detector menu
         detector_menu = tk.Menu(toolbar)
-        detector_menu.add_command(label="cv2", command=set_detector(Cv2Detector()))
-        detector_menu.add_command(label="dlib", command=set_detector(DlibDetector()))
+        detector_var = tk.StringVar(value="cv2")
+        
+        # Detector menu callback
+        def set_detector():
+            if detector_var.get() == "cv2":
+                self.sense.set_detector(Cv2Detector())
+            else:
+                self.sense.set_detector(DlibDetector())
+        
+        detector_menu.add_radiobutton(label="cv2", variable=detector_var, command=set_detector)
+        detector_menu.add_radiobutton(label="dlib", variable=detector_var, command=set_detector)
+        
         toolbar.add_cascade(label="Detectors", menu=detector_menu)
 
         # Start window
