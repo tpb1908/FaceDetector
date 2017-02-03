@@ -13,11 +13,11 @@ class CountingLine(Filter):
     # Filter name
     NAME = "Counting Line"
 
-    def __init__(self, width, height, sense):
-        super(CountingLine, self).__init__(width, height, CountingLine.NAME)
+    def __init__(self, width, height, sense, active=False):
+        super(CountingLine, self).__init__(width, height, CountingLine.NAME, active)
         self._sense = sense
 
-    def apply(self, frame):
+    def process_frame(self, frame):
         # Draw the boundary line
         # TODO Make the position optional so that we can detect line crossing anywhere, or multiple lines
         filter = super(CountingLine, self)

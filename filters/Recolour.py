@@ -6,8 +6,8 @@ from Filter import Filter
 class Recolour(Filter):
     NAME = "Recolour"
 
-    def __init__(self, width, height):
-        super(Recolour, self).__init__(width, height, Recolour.NAME)
+    def __init__(self, width, height, active=False):
+        super(Recolour, self).__init__(width, height, Recolour.NAME, active)
 
-    def apply(self, frame):
+    def process_frame(self, frame):
         return cvtColor(frame, COLOR_BGR2RGBA)

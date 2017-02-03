@@ -4,6 +4,7 @@ Created on Wed Oct 05 12:46:24 2016
 
 @author: johnsona15
 """
+from collections import OrderedDict
 
 import Tkinter as tk
 
@@ -27,28 +28,20 @@ class FaceDetector(object):
 
         self.sense = Cv2Recognition(Cv2Detector())
 
-        self.filters = {
-            CountingLine.NAME: CountingLine(self.webcam.width(), self.webcam.height(), self.sense),
-            Recolour.NAME: Recolour(self.webcam.width(), self.webcam.height())
-        }
-        self.active_filters = [CountingLine.NAME, Recolour.NAME]
+        self.filters = OrderedDict()
+        self.filters[CountingLine.NAME] = CountingLine(self.webcam.width(), self.webcam.height(), self.sense, True)
+        self.filters[Recolour.NAME] = Recolour(self.webcam.width(), self.webcam.height(), True)
 
     def loop(self):
         frame, webcam_open = self.webcam.next_frame()
         
         # Apply filters
         if webcam_open:
-            for filter_name in self.active_filters:
+            for filter_name in self.filters:
                 frame = self.filters[filter_name].apply(frame)
     
         self.webcam.render(frame)
         self.window.after(10, self.loop)
-
-    def toggle_filter(self, name):
-        return lambda: self.active_filters.remove(name) if name in self.active_filters else self.active_filters.append(name) 
-
-    def set_detector(self, detector):
-        return lambda: self.sense.set_detector(detector)
 
     def run(self):
         # Added window quit shortcut
@@ -64,16 +57,34 @@ class FaceDetector(object):
         webcam_menu.add_command(label="Close", command=self.webcam.close)
         toolbar.add_cascade(label="Webcam", menu=webcam_menu)
 
+        # Toggle filter menu callback
+        def toggle_filter(name, on_var):
+            def callback():
+                self.filters[name].set_active(on_var.get())
+                
+            return callback
+
         # Setup filter menu
         filter_menu = tk.Menu(toolbar)
-        for name in self.filters:
-            filter_menu.add_command(label=name, command=self.toggle_filter(name))
+        for i, name in enumerate(self.filters):
+            # Create menu item for filter
+            menu_item_on = tk.BooleanVar(value=self.filters[name].is_active())
+            menu_item = filter_menu.add_checkbutton(
+                label=name, 
+                command=toggle_filter(name, menu_item_on), 
+                variable=menu_item_on, 
+                onvalue=True, 
+                offvalue=False)
         toolbar.add_cascade(label="Filters", menu=filter_menu)
+
+        # Detector menu callback
+        def set_detector(detector):
+            return lambda: self.sense.set_detector(detector)
 
         # Setup detector menu
         detector_menu = tk.Menu(toolbar)
-        detector_menu.add_command(label="cv2", command=self.set_detector(Cv2Detector()))
-        detector_menu.add_command(label="dlib", command=self.set_detector(DlibDetector()))
+        detector_menu.add_command(label="cv2", command=set_detector(Cv2Detector()))
+        detector_menu.add_command(label="dlib", command=set_detector(DlibDetector()))
         toolbar.add_cascade(label="Detectors", menu=detector_menu)
 
         # Start window
