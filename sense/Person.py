@@ -21,7 +21,6 @@ class Person(object):
     def has_crossed(self, line_y):
         prev_x, prev_y = self._prev_face.centroid()
         x, y = self._face.centroid()
-
         cross_down = y > line_y > prev_y
         cross_up = y < line_y < prev_y
         return cross_down or cross_up

@@ -4,8 +4,8 @@ from Tkinter import *
 
 class NumberDialog(Dialog):
 
-    def __init__(self, parent, title="Input a number"):
-        Dialog.__init__(self, parent, title)
+    def __init__(self, parent, callback, title="Input percentage"):
+        Dialog.__init__(self, parent, callback, title)
         # super(NumberDialog, self).__init__(parent, title)
 
     def body(self, master):
@@ -18,4 +18,7 @@ class NumberDialog(Dialog):
         return self.input
 
     def apply(self):
-        return int(self.input.get())
+        try:
+            return int(self.input.get())
+        except ValueError:
+            return 50

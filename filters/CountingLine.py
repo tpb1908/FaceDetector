@@ -57,4 +57,5 @@ class CountingLine(Filter):
         return frame
 
     def set_line_pos(self, pos):
-        self._line_pos = pos
+        print("Line pos set to " + str(pos))
+        self._line_pos = int(self._height * pos/100)

@@ -110,8 +110,7 @@ class FaceDetector(object):
         settings_menu = tk.Menu(toolbar)
 
         def show_dialog():
-            d = NumberDialog(self.window)
-            pass
+            NumberDialog(self.window, lambda v: self.filters[CountingLine.NAME].set_line_pos(v))
 
         settings_menu.add_command(label="Counting line", command=show_dialog)
 

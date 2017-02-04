@@ -3,7 +3,7 @@ from Tkinter import *
 
 class Dialog(Toplevel):
 
-    def __init__(self, parent, title=None):
+    def __init__(self, parent, callback, title=None):
 
         Toplevel.__init__(self, parent)
         self.transient(parent)
@@ -13,7 +13,7 @@ class Dialog(Toplevel):
 
         self.parent = parent
 
-        self.result = None
+        self.callback = callback
 
         body = Frame(self)
         self.initial_focus = self.body(body)
@@ -34,6 +34,8 @@ class Dialog(Toplevel):
         self.initial_focus.focus_set()
 
         self.wait_window(self)
+
+
 
     #
     # construction hooks
@@ -66,14 +68,13 @@ class Dialog(Toplevel):
     def ok(self, event=None):
 
         if not self.validate():
-            self.initial_focus.focus_set() # put focus back
+            self.initial_focus.focus_set()  # put focus back
             return
 
         self.withdraw()
         self.update_idletasks()
 
-        self.apply()
-
+        self.callback(self.apply())
         self.cancel()
 
     def cancel(self, event=None):
@@ -82,12 +83,10 @@ class Dialog(Toplevel):
         self.parent.focus_set()
         self.destroy()
 
-    #
     # command hooks
 
     def validate(self):
-        return 1 # override
+        return True  # override
 
     def apply(self):
-
-        pass # override
+        pass
