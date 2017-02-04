@@ -15,6 +15,8 @@ class Webcam(object):
         self._widget = tk.Label(root)
         self._widget.pack()
 
+        self._resize_callback = None
+
         self._capture = cv2.VideoCapture()
         self.open()
         
@@ -22,15 +24,18 @@ class Webcam(object):
         # Sets the width and height of webcam frame
         ret, frame = self._capture.read()
         if not ret:
-            print("Error getting frame size, couldnt read frame")
-            return
-
-        frame_size = frame.shape[1::-1]
-        self._width = frame_size[0]
-        self._height = frame_size[1]
+            self._width = 800
+            self._height = 600
+        else:
+            frame_size = frame.shape[1::-1]
+            self._width = frame_size[0]
+            self._height = frame_size[1]
+        
+        if self._resize_callback is not None:
+            self._resize_callback()
 
     def open(self, value=0):
-        assert self._capture.open(value)
+        self._capture.open(value)
         self._set_size()
 
     def close(self):
@@ -60,8 +65,13 @@ class Webcam(object):
     def is_open(self):
         return self._capture.isOpened()
 
+    def on_resize(self, callback):
+        self._resize_callback = callback
+
+    @property
     def width(self):
         return self._width
 
+    @property
     def height(self):
         return self._height

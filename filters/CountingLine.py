@@ -26,13 +26,13 @@ class CountingLine(Filter):
         self._sense.proccess_frame(frame)
         matches = self._sense.live_people()
 
-        cv2.line(frame, (0, filter.height() / 2), (filter.width(), filter.height() / 2),
+        cv2.line(frame, (0, filter.height / 2), (filter.width, filter.height / 2),
                      CountingLine.DIVIDER_COLOUR, 1)
 
         for _, person in matches.iteritems():
 
             # Check if person crossed the line
-            if person.has_crossed(super(CountingLine, self).height() / 2):
+            if person.has_crossed(filter.height / 2):
                 print("{} crossed the line".format(person.name()))
                 person.increment()
 

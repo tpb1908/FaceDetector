@@ -29,8 +29,8 @@ class FaceDetector(object):
         self.sense = Cv2Recognition(Cv2Detector())
 
         self.filters = OrderedDict()
-        self.filters[CountingLine.NAME] = CountingLine(self.webcam.width(), self.webcam.height(), self.sense, True)
-        self.filters[Recolour.NAME] = Recolour(self.webcam.width(), self.webcam.height(), True)
+        self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense, True)
+        self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, True)
 
     def loop(self):
         frame, webcam_open = self.webcam.next_frame()
@@ -44,6 +44,14 @@ class FaceDetector(object):
         self.window.after(10, self.loop)
 
     def run(self):
+        # Setup resize event
+        def resize():
+            for (_, filter) in self.filters.items():
+                filter.width = self.webcam.width
+                filter.height = self.webcam.height
+
+        self.webcam.on_resize(resize)
+
         # Added window quit shortcut
         self.window.bind('<Escape>', lambda e: self.window.quit())
         

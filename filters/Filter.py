@@ -21,11 +21,21 @@ class Filter(object):
     def process_frame(self, frame):
         return frame
 
+    @property
     def width(self):
         return self._width
 
+    @width.setter
+    def width(self, width):
+        self._width = width
+
+    @property
     def height(self):
         return self._height
+
+    @height.setter
+    def height(self, height):
+        self._height = height
 
     def name(self):
         return self._name
