@@ -17,6 +17,8 @@ from sense.Cv2Recognition import Cv2Recognition
 from sense.detectors.Cv2Detector import Cv2Detector
 from sense.detectors.DlibDetector import DlibDetector
 from ui.Webcam import Webcam
+from ui.Dialog import Dialog
+from ui.NumberDialog import NumberDialog
 
 
 class FaceDetector(object):
@@ -104,6 +106,16 @@ class FaceDetector(object):
         detector_menu.add_radiobutton(label="dlib", variable=detector_var, command=set_detector)
 
         toolbar.add_cascade(label="Detectors", menu=detector_menu)
+
+        settings_menu = tk.Menu(toolbar)
+
+        def show_dialog():
+            d = NumberDialog(self.window)
+            pass
+
+        settings_menu.add_command(label="Counting line", command=show_dialog)
+
+        toolbar.add_cascade(label="Settings", menu=settings_menu)
 
         # Start window
         self.loop()
