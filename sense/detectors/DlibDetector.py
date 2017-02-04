@@ -25,3 +25,4 @@ class DlibDetector(Detector):
             faces.append(Face(face_position, img_grey))
 
         return faces
+

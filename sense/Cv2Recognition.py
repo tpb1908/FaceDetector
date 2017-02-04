@@ -22,6 +22,8 @@ class Cv2Recognition(object):
         with open("data/face-model.pkl", "rb") as fh:
             self.clf, self.gmm, self.thresh = Pickle.load(fh)
 
+        self._eyes = []
+
     def set_detector(self, detector):
         self._detection = detector
 
@@ -49,8 +51,14 @@ class Cv2Recognition(object):
             if not person.active():
                 del self._people[name]
 
+        self._eyes = self._detection.get_eyes(frame)
+
     def live_people(self):
         return self._live_people
 
     def active_people(self):
         return self._people
+
+    def get_eyes(self):
+        return self._eyes
+
