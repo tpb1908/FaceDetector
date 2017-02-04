@@ -30,5 +30,14 @@ Implement training in Dlib
 Train Dlib with other objects
 
 * Eyes
+* Hands
 * Geometric shapes
 * Other simple objects
+
+#### Data sets
+
+Hundreds of datasets
+http://homepages.inf.ed.ac.uk/rbf/CVonline/Imagedbase.htm#face
+
+
+
