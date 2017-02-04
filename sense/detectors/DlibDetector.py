@@ -12,7 +12,6 @@ class DlibDetector(Detector):
         # Create face detector
         self.detector = dlib.get_frontal_face_detector()
 
-
     def get_faces(self, frame):
         img_grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 

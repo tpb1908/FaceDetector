@@ -10,6 +10,7 @@ from collections import OrderedDict
 
 from filters.CountingLine import CountingLine
 from filters.Fps import Fps
+from filters.Info import  Info
 from filters.Recolour import Recolour
 from filters.EyeHighlighter import EyeHighlighter
 from sense.Cv2Recognition import Cv2Recognition
@@ -30,6 +31,7 @@ class FaceDetector(object):
         self.filters = OrderedDict()
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, True)
+        self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, True)
         self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, True)
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
 

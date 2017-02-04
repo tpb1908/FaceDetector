@@ -24,6 +24,5 @@ class Fps(Filter):
             "FPS: " + str(int(fps)),
             (filter.width - 80, 20),
             cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
-
         self._last_frame = now
         return frame
