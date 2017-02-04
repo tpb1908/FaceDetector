@@ -1,5 +1,6 @@
 import time
 
+
 class Person(object):
     def __init__(self, face, name):
         self._prev_face = face
@@ -13,7 +14,7 @@ class Person(object):
         # Update face
         self._prev_face = self._face
         self._face = face
-        
+
         # Update time stamp
         self._last_seen = time.time()
 

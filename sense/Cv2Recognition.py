@@ -1,11 +1,10 @@
-import glob
-import os
 import cPickle as Pickle
+import glob
 
 from sense.Person import Person
 
+
 class Cv2Recognition(object):
-    
     def __init__(self, detector):
         self._detection = detector
 
@@ -26,7 +25,7 @@ class Cv2Recognition(object):
     def set_detector(self, detector):
         self._detection = detector
 
-    def proccess_frame(self, frame):
+    def process_frame(self, frame):
         self._live_people = {}
         for face in self._detection.get_faces(frame):
             is_imposter = self.gmm.score(face.features()) < self.thresh
@@ -49,7 +48,6 @@ class Cv2Recognition(object):
         for (name, person) in self._people.items():
             if not person.active():
                 del self._people[name]
-        
 
     def live_people(self):
         return self._live_people

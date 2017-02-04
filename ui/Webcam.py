@@ -1,14 +1,11 @@
-import cv2
-import numpy as np
-
 import Tkinter as tk
+import numpy as np
 from PIL import Image, ImageTk
 
-from filters.Filter import Filter
+import cv2
 
 
 class Webcam(object):
-
     def __init__(self, root):
         # Setup widget
         self._root = root
@@ -19,7 +16,7 @@ class Webcam(object):
 
         self._capture = cv2.VideoCapture()
         self.open()
-        
+
     def _set_size(self):
         # Sets the width and height of webcam frame
         ret, frame = self._capture.read()
@@ -30,7 +27,7 @@ class Webcam(object):
             frame_size = frame.shape[1::-1]
             self._width = frame_size[0]
             self._height = frame_size[1]
-        
+
         if self._resize_callback is not None:
             self._resize_callback()
 
@@ -54,12 +51,13 @@ class Webcam(object):
         ret, frame = self._capture.read()
         if ret:
             return frame, True
-        
+
         # No webcam input so return black image
-        image = np.zeros((self._height, self._width , 3), np.uint8)
+        image = np.zeros((self._height, self._width, 3), np.uint8)
         # TODO: is their a better way to center text?
-        cv2.putText(image, "Webcam Closed", (self._width / 2 - 60, self._height / 2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 0)
-        
+        cv2.putText(image, "Webcam Closed", (self._width / 2 - 60, self._height / 2), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                    (255, 0, 0), 0)
+
         return image, False
 
     def is_open(self):

@@ -2,7 +2,6 @@ import cv2
 
 from filters.Filter import Filter
 
-from sense.Person import Person
 
 class CountingLine(Filter):
     # Colours for drawing on processed frames
@@ -23,11 +22,11 @@ class CountingLine(Filter):
         filter = super(CountingLine, self)
 
         # Get the people in frame
-        self._sense.proccess_frame(frame)
+        self._sense.process_frame(frame)
         matches = self._sense.live_people()
 
         cv2.line(frame, (0, filter.height / 2), (filter.width, filter.height / 2),
-                     CountingLine.DIVIDER_COLOUR, 1)
+                 CountingLine.DIVIDER_COLOUR, 1)
 
         for _, person in matches.iteritems():
 
@@ -44,13 +43,13 @@ class CountingLine(Filter):
                           (shape.x + shape.width - 1, shape.y + shape.height - 1),
                           CountingLine.BOUNDING_BOX_COLOUR,
                           1)
-            
+
             # Draw centroid
             cv2.circle(frame, person.centroid(), 2, CountingLine.CENTROID_COLOUR, -1)
 
             # Draw name and count
             cv2.putText(
-                frame, "{} {}".format(person.name(), person.count()), 
+                frame, "{} {}".format(person.name(), person.count()),
                 (shape.x, shape.y - 5),
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 
