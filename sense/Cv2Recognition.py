@@ -27,7 +27,7 @@ class Cv2Recognition(object):
     def set_detector(self, detector):
         self._detection = detector
 
-    def process_frame(self, frame):
+    def process_faces(self, frame):
         self._live_people = {}
         for face in self._detection.get_faces(frame):
             is_imposter = self.gmm.score(face.features()) < self.thresh
@@ -51,6 +51,7 @@ class Cv2Recognition(object):
             if not person.active():
                 del self._people[name]
 
+    def process_eyes(self, frame):
         self._eyes = self._detection.get_eyes(frame)
 
     def live_people(self):
