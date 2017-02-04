@@ -12,9 +12,10 @@ class CountingLine(Filter):
     # Filter name
     NAME = "Counting Line"
 
-    def __init__(self, width, height, sense, active=False):
+    def __init__(self, width, height, sense, line_pos, active=False):
         super(CountingLine, self).__init__(width, height, CountingLine.NAME, active)
         self._sense = sense
+        self._line_pos = line_pos
 
     def process_frame(self, frame):
         # Draw the boundary line
@@ -25,13 +26,13 @@ class CountingLine(Filter):
         self._sense.process_frame(frame)
         matches = self._sense.live_people()
 
-        cv2.line(frame, (0, filter.height / 2), (filter.width, filter.height / 2),
+        cv2.line(frame, (0, self._line_pos), (filter.width, self._line_pos),
                  CountingLine.DIVIDER_COLOUR, 1)
 
         for _, person in matches.iteritems():
 
             # Check if person crossed the line
-            if person.has_crossed(filter.height / 2):
+            if person.has_crossed(self._line_pos):
                 print("{} crossed the line".format(person.name()))
                 person.increment()
 
@@ -54,3 +55,6 @@ class CountingLine(Filter):
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 
         return frame
+
+    def set_line_pos(self, pos):
+        self._line_pos = pos

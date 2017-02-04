@@ -29,7 +29,7 @@ class FaceDetector(object):
         self.sense = Cv2Recognition(Cv2Detector())
 
         self.filters = OrderedDict()
-        self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense, True)
+        self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense, self.webcam.height / 2, True)
         self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, True)
         self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, True)
         self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, True)
