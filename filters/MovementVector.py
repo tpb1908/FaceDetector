@@ -29,7 +29,7 @@ class MovementVector(Filter):
 
             new_people_positions[name].append(person.centroid())
             
-            a, b  = self.linear_regression(new_people_positions[name])
+            a, b = self.linear_regression(new_people_positions[name])
 
             p1 = person.centroid()
             theta = math.atan(b)

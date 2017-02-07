@@ -12,6 +12,11 @@ class Webcam(object):
         self._widget = tk.Label(root)
         self._widget.pack()
 
+        def on_click(event):
+            print "Event"
+
+        self._widget.bind("<Button 1>", on_click)
+
         self._resize_callback = None
 
         self._capture = cv2.VideoCapture()
@@ -50,6 +55,7 @@ class Webcam(object):
     def next_frame(self):
         ret, frame = self._capture.read()
         if ret:
+            frame = cv2.flip(frame, 1)
             return frame, True
 
         # No webcam input so return black image
