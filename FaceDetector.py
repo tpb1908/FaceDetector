@@ -13,6 +13,7 @@ from filters.Fps import Fps
 from filters.Info import  Info
 from filters.Recolour import Recolour
 from filters.EyeHighlighter import EyeHighlighter
+from filters.MovementVector import MovementVector
 from sense.Cv2Recognition import Cv2Recognition
 from sense.detectors.Cv2Detector import Cv2Detector
 from sense.detectors.DlibDetector import DlibDetector
@@ -32,10 +33,12 @@ class FaceDetector(object):
 
         self.filters = OrderedDict()
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense, self.webcam.height / 2, True)
-        self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, True)
+        self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, True)
         self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, True)
-        self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
+        self.filters[MovementVector.NAME] = MovementVector(self.webcam.width, self.webcam.height, self.sense, True)
+
+        self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, True)
 
     def loop(self):
         frame, webcam_open = self.webcam.next_frame()
