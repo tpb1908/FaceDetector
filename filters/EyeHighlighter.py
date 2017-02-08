@@ -5,7 +5,7 @@ from filters.Filter import Filter
 
 class EyeHighlighter(Filter):
 
-    NAME = "EyeFinder"
+    NAME = "Eye Highlighter"
 
     BOUNDING_BOX_COLOUR = (95, 120, 160)
 

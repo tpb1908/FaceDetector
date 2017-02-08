@@ -18,14 +18,12 @@ class CountingLine(Filter):
         self._line_pos = line_pos
 
     def process_frame(self, frame):
-        # Draw the boundary line
-        # TODO Make the position optional so that we can detect line crossing anywhere, or multiple lines
         filter = super(CountingLine, self)
 
         # Get the people in frame
-         # self._sense.process_faces(frame)
         matches = self._sense.live_people()
 
+        # Draw the boundary line
         cv2.line(frame, (0, self._line_pos), (filter.width, self._line_pos),
                  CountingLine.DIVIDER_COLOUR, 1)
 
@@ -38,13 +36,13 @@ class CountingLine(Filter):
 
             shape = person.shape()
 
-            # Draw the bounding box
-            cv2.rectangle(frame,
-                          (shape.x, shape.y),
-                          (shape.x + shape.width - 1, shape.y + shape.height - 1),
-                          CountingLine.BOUNDING_BOX_COLOUR,
-                          1)
-
+            # # Draw the bounding box
+            # cv2.rectangle(frame,
+            #               (shape.x, shape.y),
+            #               (shape.x + shape.width - 1, shape.y + shape.height - 1),
+            #               CountingLine.BOUNDING_BOX_COLOUR,
+            #               1)
+            #
             # Draw centroid
             cv2.circle(frame, person.centroid(), 2, CountingLine.CENTROID_COLOUR, -1)
 

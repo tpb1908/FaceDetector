@@ -6,7 +6,6 @@ Created on Wed Oct 05 12:46:24 2016
 """
 import Tkinter as tk
 import warnings
-import time
 from collections import OrderedDict
 
 from filters.CountingLine import CountingLine
@@ -15,12 +14,11 @@ from filters.Info import  Info
 from filters.Recolour import Recolour
 from filters.EyeHighlighter import EyeHighlighter
 from filters.MovementVector import MovementVector
-from sense.Cv2Recognition import Cv2Recognition
+from filters.FaceHighlighter import FaceHighlighter
 from sense.detectors.Cv2Detector import Cv2Detector
 from sense.detectors.DlibDetector import DlibDetector
 from sense.thread.Cv2Thread import Cv2Thread
 from ui.Webcam import Webcam
-from ui.Dialog import Dialog
 from ui.NumberDialog import NumberDialog
 
 
@@ -36,6 +34,7 @@ class FaceDetector(object):
         self.sense.start()
         
         self.filters = OrderedDict()
+        self.filters[FaceHighlighter.NAME] = FaceHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense, self.webcam.height / 2, True)
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, True)
