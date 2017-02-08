@@ -19,7 +19,7 @@ class Webcam(object):
 
         self._resize_callback = None
 
-        self._capture = cv2.VideoCapture()
+        self._capture = cv2.VideoCapture(-1)
         self.open()
 
     def _set_size(self):

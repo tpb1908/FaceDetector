@@ -33,7 +33,7 @@ class MovementVector(Filter):
 
             p1 = person.centroid()
             theta = -math.atan(b) - (3.141593653 * 1/2)
-            print(b, int(theta * 180/3.141592653))
+            # print(b, int(theta * 180/3.141592653))
     
             p2 = (int(p1[0] + math.cos(theta)*MovementVector.LENGTH), int(p1[1] + math.sin(theta)*MovementVector.LENGTH))
             # print (p1, p2)

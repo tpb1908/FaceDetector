@@ -1,3 +1,5 @@
+import time
+
 class Filter(object):
 
     def __init__(self, width, height, name, active=False):

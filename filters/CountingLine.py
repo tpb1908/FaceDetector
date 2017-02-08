@@ -23,7 +23,7 @@ class CountingLine(Filter):
         filter = super(CountingLine, self)
 
         # Get the people in frame
-        self._sense.process_faces(frame)
+         # self._sense.process_faces(frame)
         matches = self._sense.live_people()
 
         cv2.line(frame, (0, self._line_pos), (filter.width, self._line_pos),

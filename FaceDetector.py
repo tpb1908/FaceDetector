@@ -6,6 +6,7 @@ Created on Wed Oct 05 12:46:24 2016
 """
 import Tkinter as tk
 import warnings
+import time
 from collections import OrderedDict
 
 from filters.CountingLine import CountingLine
@@ -17,6 +18,7 @@ from filters.MovementVector import MovementVector
 from sense.Cv2Recognition import Cv2Recognition
 from sense.detectors.Cv2Detector import Cv2Detector
 from sense.detectors.DlibDetector import DlibDetector
+from sense.thread.Cv2Thread import Cv2Thread
 from ui.Webcam import Webcam
 from ui.Dialog import Dialog
 from ui.NumberDialog import NumberDialog
@@ -29,8 +31,10 @@ class FaceDetector(object):
         self.window = tk.Tk()
         self.webcam = Webcam(self.window)
 
-        self.sense = Cv2Recognition(Cv2Detector())
+        self.sense = Cv2Thread(1, "test", Cv2Detector())
 
+        self.sense.start()
+        
         self.filters = OrderedDict()
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense, self.webcam.height / 2, True)
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
@@ -42,14 +46,18 @@ class FaceDetector(object):
 
     def loop(self):
         frame, webcam_open = self.webcam.next_frame()
-
+        if(webcam_open):
+            self.sense.append(frame)
         # Apply filters
         if webcam_open:
             for filter_name in self.filters:
+                # start = time.time()
                 frame = self.filters[filter_name].apply(frame)
-
+                # print(filter_name + " " +  str(time.time() - start))
+        # start  = time.time()
         self.webcam.render(frame)
-        self.window.after(10, self.loop)
+        # sprint(time.time() - start)
+        self.window.after(1, self.loop)
 
     def run(self):
         # Setup resize event
@@ -122,6 +130,10 @@ class FaceDetector(object):
         # Start window
         self.loop()
         self.window.mainloop()
+
+def on_closing():
+    self._sense.kill()
+    self.root.destroy()
 
 
 if __name__ == "__main__":

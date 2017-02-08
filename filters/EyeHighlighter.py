@@ -14,7 +14,7 @@ class EyeHighlighter(Filter):
         self._sense = sense
 
     def process_frame(self, frame):
-        self._sense.process_eyes(frame)
+        # self._sense.process_eyes(frame)
         eyes = self._sense.get_eyes()
         for eye in eyes:
             shape = eye.shape()
