@@ -46,6 +46,7 @@ class Cv2Thread(threading.Thread):
     def kill(self):
         self._thread_lock.acquire()
         self._alive = False
+        print "Stopping thread"
         self._thread_lock.release()
 
     def append(self, item):

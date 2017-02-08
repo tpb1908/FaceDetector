@@ -59,6 +59,11 @@ class FaceDetector(object):
         # sprint(time.time() - start)
         self.window.after(1, self.loop)
 
+    def on_closing(self):
+        print "Closing"
+        self.sense.kill()
+        self.window.destroy()
+
     def run(self):
         # Setup resize event
         def resize():
@@ -127,15 +132,11 @@ class FaceDetector(object):
 
         toolbar.add_cascade(label="Settings", menu=settings_menu)
 
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
         # Start window
         self.loop()
         self.window.mainloop()
-
-    def on_closing(self):
-        print "Closing"
-        self.sense.kill()
-        self.window.destroy()
-
 
 if __name__ == "__main__":
     # Disable deprecation warning
