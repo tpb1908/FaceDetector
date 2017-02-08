@@ -5,6 +5,7 @@ import glob
 
 from sense.Person import Person
 
+
 class Cv2Thread(threading.Thread):
 
     def __init__(self, thread_id, name, detector):
@@ -35,15 +36,16 @@ class Cv2Thread(threading.Thread):
 
     def run(self):
         while True:
-            if(self._next != None):
+            if self._next is not None:
                 self.process_faces(self._next)
                 self.process_eyes(self._next)
             time.sleep(0.005)
-            if not self._alive: return
+            if not self._alive:
+                return
                 
     def kill(self):
         self._thread_lock.acquire()
-        self._alive = Falses
+        self._alive = False
         self._thread_lock.release()
 
     def append(self, item):

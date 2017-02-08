@@ -131,9 +131,10 @@ class FaceDetector(object):
         self.loop()
         self.window.mainloop()
 
-def on_closing():
-    self._sense.kill()
-    self.root.destroy()
+    def on_closing(self):
+        print "Closing"
+        self.sense.kill()
+        self.window.destroy()
 
 
 if __name__ == "__main__":
