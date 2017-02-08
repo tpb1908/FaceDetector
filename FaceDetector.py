@@ -6,6 +6,7 @@ Created on Wed Oct 05 12:46:24 2016
 """
 import Tkinter as tk
 import warnings
+import time
 from collections import OrderedDict
 
 from filters.CountingLine import CountingLine
@@ -49,12 +50,12 @@ class FaceDetector(object):
         if webcam_open:
             self.sense.update_frame(frame)
             for filter_name in self.filters:
-                # start = time.time()
+                start = time.time()
                 frame = self.filters[filter_name].apply(frame)
-                # print(filter_name + " " +  str(time.time() - start))
-        # start  = time.time()
+                print(filter_name + " " + str(1000 *(time.time() - start)))
+        start = time.time()
         self.webcam.render(frame)
-        # sprint(time.time() - start)
+        print(1000*(time.time() - start))
         self.window.after(1, self.loop)
 
     def on_closing(self):

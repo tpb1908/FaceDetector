@@ -53,7 +53,9 @@ class DetectorThread(threading.Thread):
         self._thread_lock.release()
 
     def set_detector(self, detector):
+        self._thread_lock.acquire()
         self._detection = detector
+        self._thread_lock.release()
 
     def process_faces(self, frame):
         live_people = {}

@@ -19,7 +19,8 @@ class Webcam(object):
 
         self._resize_callback = None
 
-        self._capture = cv2.VideoCapture(-1)
+        self._capture = cv2.VideoCapture()
+        self._capture.set(cv2.cv.CV_CAP_PROP_FPS, 30)
         self.open()
 
     def _set_size(self):
@@ -60,7 +61,7 @@ class Webcam(object):
 
         # No webcam input so return black image
         image = np.zeros((self._height, self._width, 3), np.uint8)
-        # TODO: is their a better way to center text?
+        # TODO: is there a better way to center text?
         cv2.putText(image, "Webcam Closed", (self._width / 2 - 60, self._height / 2), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                     (255, 0, 0), 0)
 
