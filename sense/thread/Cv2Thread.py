@@ -8,12 +8,10 @@ from sense.Person import Person
 
 class Cv2Thread(threading.Thread):
 
-    def __init__(self, thread_id, name, detector):
+    def __init__(self, detector):
         threading.Thread.__init__(self)
 
         self._thread_lock = threading.Lock()
-        self._thread_id = thread_id
-        self._name = name
         self._detection = detector
         self._next = None
 
@@ -49,7 +47,7 @@ class Cv2Thread(threading.Thread):
         print "Stopping thread"
         self._thread_lock.release()
 
-    def append(self, item):
+    def update_frame(self, item):
         self._thread_lock.acquire()
         self._next = item
         self._thread_lock.release()

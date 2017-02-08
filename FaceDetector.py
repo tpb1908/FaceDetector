@@ -31,7 +31,7 @@ class FaceDetector(object):
         self.window = tk.Tk()
         self.webcam = Webcam(self.window)
 
-        self.sense = Cv2Thread(1, "test", Cv2Detector())
+        self.sense = Cv2Thread(Cv2Detector())
 
         self.sense.start()
         
@@ -46,10 +46,9 @@ class FaceDetector(object):
 
     def loop(self):
         frame, webcam_open = self.webcam.next_frame()
-        if(webcam_open):
-            self.sense.append(frame)
         # Apply filters
         if webcam_open:
+            self.sense.update_frame(frame)
             for filter_name in self.filters:
                 # start = time.time()
                 frame = self.filters[filter_name].apply(frame)
@@ -74,7 +73,7 @@ class FaceDetector(object):
         self.webcam.on_resize(resize)
 
         # Added window quit shortcut
-        self.window.bind('<Escape>', lambda e: self.window.quit())
+        self.window.bind('<Escape>', lambda e: self.on_closing())
 
         # Create toolbar
         toolbar = tk.Menu(self.window)

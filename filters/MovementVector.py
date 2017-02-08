@@ -3,6 +3,7 @@ import cv2
 
 from filters.Filter import Filter
 
+
 class MovementVector(Filter):
     NAME = "Movement Vector"
     RETAIN = 20
