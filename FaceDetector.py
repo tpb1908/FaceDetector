@@ -17,7 +17,7 @@ from filters.MovementVector import MovementVector
 from filters.FaceHighlighter import FaceHighlighter
 from sense.detectors.Cv2Detector import Cv2Detector
 from sense.detectors.DlibDetector import DlibDetector
-from sense.thread.Cv2Thread import Cv2Thread
+from sense.thread.DetectorThread import DetectorThread
 from ui.Webcam import Webcam
 from ui.NumberDialog import NumberDialog
 
@@ -29,7 +29,7 @@ class FaceDetector(object):
         self.window = tk.Tk()
         self.webcam = Webcam(self.window)
 
-        self.sense = Cv2Thread(Cv2Detector())
+        self.sense = DetectorThread(Cv2Detector())
 
         self.sense.start()
         

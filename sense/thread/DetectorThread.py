@@ -6,7 +6,7 @@ import glob
 from sense.Person import Person
 
 
-class Cv2Thread(threading.Thread):
+class DetectorThread(threading.Thread):
 
     def __init__(self, detector):
         threading.Thread.__init__(self)
