@@ -2,7 +2,6 @@ from Tkinter import *
 
 
 class Dialog(Toplevel):
-
     def __init__(self, parent, callback, title=None):
 
         Toplevel.__init__(self, parent)
@@ -28,14 +27,12 @@ class Dialog(Toplevel):
 
         self.protocol("WM_DELETE_WINDOW", self.cancel)
 
-        self.geometry("+%d+%d" % (parent.winfo_rootx()+50,
-                                  parent.winfo_rooty()+50))
+        self.geometry("+%d+%d" % (parent.winfo_rootx() + 50,
+                                  parent.winfo_rooty() + 50))
 
         self.initial_focus.focus_set()
 
         self.wait_window(self)
-
-
 
     #
     # construction hooks

@@ -1,6 +1,7 @@
 import Tkinter as tk
 import numpy as np
 from PIL import Image, ImageTk
+import time
 
 import cv2
 
@@ -54,7 +55,9 @@ class Webcam(object):
             print("ERROR: Webcam is not attached to a widget!")
 
     def next_frame(self):
+        start = time.time()
         ret, frame = self._capture.read()
+        print("Read frame: " + str(1000 * (time.time()-start)))
         if ret:
             frame = cv2.flip(frame, 1)
             return frame, True

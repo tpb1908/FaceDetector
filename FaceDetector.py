@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 from filters.CountingLine import CountingLine
 from filters.Fps import Fps
-from filters.Info import  Info
+from filters.Info import Info
 from filters.Recolour import Recolour
 from filters.EyeHighlighter import EyeHighlighter
 from filters.MovementVector import MovementVector
@@ -33,10 +33,11 @@ class FaceDetector(object):
         self.sense = DetectorThread(Cv2Detector())
 
         self.sense.start()
-        
+
         self.filters = OrderedDict()
         self.filters[FaceHighlighter.NAME] = FaceHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
-        self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense, self.webcam.height / 2, True)
+        self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense,
+                                                       self.webcam.height / 2, True)
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, True)
         self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, True)
@@ -45,17 +46,19 @@ class FaceDetector(object):
         self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, True)
 
     def loop(self):
+        start = time.time()
         frame, webcam_open = self.webcam.next_frame()
+        print("Get frame: " + str(1000 * (time.time() - start)))
         # Apply filters
         if webcam_open:
             self.sense.update_frame(frame)
             for filter_name in self.filters:
-                start = time.time()
+                # start = time.time()
                 frame = self.filters[filter_name].apply(frame)
-                print(filter_name + " " + str(1000 *(time.time() - start)))
+                # print(filter_name + " " + str(1000 *(time.time() - start)))
         start = time.time()
         self.webcam.render(frame)
-        print(1000*(time.time() - start))
+        print("Render frame: " + str(1000 * (time.time() - start)))
         self.window.after(1, self.loop)
 
     def on_closing(self):
@@ -98,7 +101,7 @@ class FaceDetector(object):
         for i, name in enumerate(self.filters):
             # Create menu item for filter
             menu_item_on = tk.BooleanVar(value=self.filters[name].is_active())
-            menu_item = filter_menu.add_checkbutton(
+            filter_menu.add_checkbutton(
                 label=name,
                 command=toggle_filter(name, menu_item_on),
                 variable=menu_item_on,
@@ -136,6 +139,7 @@ class FaceDetector(object):
         # Start window
         self.loop()
         self.window.mainloop()
+
 
 if __name__ == "__main__":
     # Disable deprecation warning

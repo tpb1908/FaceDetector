@@ -38,6 +38,7 @@ class DetectorThread(threading.Thread):
                 self.process_faces(self._next)
                 self.process_eyes(self._next)
             time.sleep(0.005)
+            # print("Is main thread? " + str(isinstance(threading.currentThread(), threading._MainThread)))
             if not self._alive:
                 return
                 

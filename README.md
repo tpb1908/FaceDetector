@@ -21,8 +21,6 @@ Enable or disable different filters in the menu
 
 Re-implement training as another layer
 
-Add a layer for just displaying names, separate from CountingLine
-
 ### Dlib
 
 Implement training in Dlib
