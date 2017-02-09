@@ -34,13 +34,14 @@ class DetectorThread(threading.Thread):
 
     def run(self):
         while True:
+            if not self._alive:
+                return
             if self._next is not None:
                 self.process_faces(self._next)
                 self.process_eyes(self._next)
+                self._next = None
             time.sleep(0.005)
             # print("Is main thread? " + str(isinstance(threading.currentThread(), threading._MainThread)))
-            if not self._alive:
-                return
                 
     def kill(self):
         self._thread_lock.acquire()
