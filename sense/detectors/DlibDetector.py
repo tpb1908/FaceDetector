@@ -11,7 +11,7 @@ class DlibDetector(Detector):
         super(DlibDetector, self).__init__()
 
         # Create face detector
-        self.detector = dlib.get_frontal_face_detector()
+        self._detector = dlib.get_frontal_face_detector()
 
     def get_faces(self, frame):
         start = time.time()
@@ -19,7 +19,7 @@ class DlibDetector(Detector):
 
         # Get all faces in frame
         faces = []
-        for position in self.detector(frame, 1):
+        for position in self._detector(frame, 1):
             # Convert position into (x, y, width, height)
             top, left, bottom, right = position.top(), position.left(), position.bottom(), position.right()
             face_position = (left, top, right - left, bottom - top)
