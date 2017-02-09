@@ -39,7 +39,7 @@ class FaceDetector(object):
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense,
                                                        self.webcam.height / 2, True)
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
-        self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, True)
+        self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, False)
         self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, True)
         self.filters[MovementVector.NAME] = MovementVector(self.webcam.width, self.webcam.height, self.sense, True)
 

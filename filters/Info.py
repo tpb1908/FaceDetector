@@ -10,7 +10,7 @@ class Info(Filter):
     NAME = "Info"
 
     def __init__(self, width, height, active=False):
-        super(Info, self).__init__(width, height, active)
+        super(Info, self).__init__(width, height, Info.NAME, active)
         self._start_time = time.time()
 
     def process_frame(self, frame):
