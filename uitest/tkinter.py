@@ -10,6 +10,7 @@ import bench
 
 window = tk.Tk()
 label = tk.Label(window)
+label.pack()
 sample = 0
 
 def loop():
