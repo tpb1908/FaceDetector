@@ -62,11 +62,14 @@ class DetectorThread(threading.Thread):
     def process_faces(self, frame):
         live_people = {}
         people = self._people.copy()
+        
+        i = 0
         for face in self._detection.get_faces(frame):
+            i += 1
             is_imposter = self.gmm.score(face.features()) < self.thresh
 
             # Get the name of the face
-            name = "Imposter"
+            name = "Imposter" + str(i)
             if not is_imposter:
                 prediction = self.clf.predict(face.features())[0]
                 name = self._names[prediction]
@@ -78,6 +81,8 @@ class DetectorThread(threading.Thread):
                 people[name] = Person(face, name)
 
             live_people[name] = people[name]
+
+        print ("Live people: ", len(live_people))
 
         # Remove inactive people
         for (name, person) in people.items():
