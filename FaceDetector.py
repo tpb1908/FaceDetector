@@ -135,12 +135,15 @@ class FaceDetector(object):
         thread_var = tk.IntVar(value=1)
 
         def toggle_thread():
+            self.sense.dispose()
+            
             if thread_var.get() == 1:
                 self.sense = DetectorThread(Cv2Detector())
-                for filter in self.filters:
-                    filter.set_sense(self.sense)
             else:
                 self.sense = Cv2Recognition(Cv2Detector())
+            
+            for filter in self.filters:
+                filter.set_sense(self.sense)
 
         settings_menu.add_checkbutton(label="Threaded", var=thread_var, command=toggle_thread)
 
