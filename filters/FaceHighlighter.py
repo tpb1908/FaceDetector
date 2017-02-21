@@ -12,9 +12,8 @@ class FaceHighlighter(Filter):
     NAME = "Face Highlighter"
 
     def __init__(self, width, height, sense,  active=False):
-        super(FaceHighlighter, self).__init__(width, height, FaceHighlighter.NAME, active)
-        self._sense = sense
-
+        super(FaceHighlighter, self).__init__(width, height, FaceHighlighter.NAME, sense, active)
+        
     def process_frame(self, frame):
 
         # Get the people in frame

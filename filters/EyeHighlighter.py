@@ -10,9 +10,8 @@ class EyeHighlighter(Filter):
     BOUNDING_BOX_COLOUR = (95, 120, 160)
 
     def __init__(self, width, height, sense, active=False):
-        super(EyeHighlighter, self).__init__(width, height, EyeHighlighter.NAME, active)
-        self._sense = sense
-
+        super(EyeHighlighter, self).__init__(width, height, EyeHighlighter.NAME, sense, active)
+        
     def process_frame(self, frame):
         # self._sense.process_eyes(frame)
         eyes = self._sense.get_eyes()

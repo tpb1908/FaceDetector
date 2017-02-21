@@ -27,13 +27,29 @@ class Cv2Recognition(object):
     def set_detector(self, detector):
         self._detection = detector
 
+    def update_frame(self, frame):
+        self.process_faces(frame)
+        self.process_eyes(frame)
+
+    def kill(self):
+        pass
+
+    def start(self):
+        pass
+
+    def dispose(self):
+        pass
+
     def process_faces(self, frame):
         self._live_people = {}
+        
+        i = 0
         for face in self._detection.get_faces(frame):
+            i += 1
             is_imposter = self.gmm.score(face.features()) < self.thresh
 
             # Get the name of the face
-            name = "Imposter"
+            name = "Imposter" + str(i)
             if not is_imposter:
                 prediction = self.clf.predict(face.features())[0]
                 name = self._names[prediction]

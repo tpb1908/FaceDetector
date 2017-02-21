@@ -1,12 +1,16 @@
 
 class Filter(object):
 
-    def __init__(self, width, height, name, active=False):
+    def __init__(self, width, height, name, sense, active=False):
         self._width = width
         self._height = height
         self._name = name
+        self._sense = sense
         self._is_active = active
         pass
+
+    def set_sense(self, sense):
+        self._sense = sense
 
     def set_active(self, is_active):
         self._is_active = is_active

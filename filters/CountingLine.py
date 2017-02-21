@@ -13,8 +13,7 @@ class CountingLine(Filter):
     NAME = "Counting Line"
 
     def __init__(self, width, height, sense, line_pos, active=False):
-        super(CountingLine, self).__init__(width, height, CountingLine.NAME, active)
-        self._sense = sense
+        super(CountingLine, self).__init__(width, height, CountingLine.NAME, sense, active)
         self._line_pos = line_pos
 
     def process_frame(self, frame):

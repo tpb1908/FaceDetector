@@ -19,6 +19,7 @@ from filters.FaceHighlighter import FaceHighlighter
 from sense.detectors.Cv2Detector import Cv2Detector
 from sense.detectors.DlibDetector import DlibDetector
 from sense.thread.DetectorThread import DetectorThread
+from sense.Cv2Recognition import Cv2Recognition
 from ui.Webcam import Webcam
 from ui.NumberDialog import NumberDialog
 
@@ -31,7 +32,6 @@ class FaceDetector(object):
         self.webcam = Webcam(self.window)
 
         self.sense = DetectorThread(Cv2Detector())
-
         self.sense.start()
 
         self.filters = OrderedDict()
@@ -43,7 +43,7 @@ class FaceDetector(object):
         self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, True)
         self.filters[MovementVector.NAME] = MovementVector(self.webcam.width, self.webcam.height, self.sense, True)
 
-        self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, True)
+        self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, self.sense, True)
 
     def loop(self):
         start = time.time()
@@ -82,7 +82,7 @@ class FaceDetector(object):
         toolbar = tk.Menu(self.window)
         self.window.config(menu=toolbar)
 
-        # Setup webcam menu
+        # Setup webcam menu 
         webcam_menu = tk.Menu(toolbar)
         webcam_menu.add_command(label="Open", command=self.webcam.open)
         webcam_menu.add_command(label="Video", command=lambda: self.webcam.open('data/Sample.mp4'))
@@ -131,6 +131,18 @@ class FaceDetector(object):
             NumberDialog(self.window, lambda v: self.filters[CountingLine.NAME].set_line_pos(v))
 
         settings_menu.add_command(label="Counting line", command=show_dialog)
+        
+        thread_var = tk.IntVar(value=1)
+
+        def toggle_thread():
+            if thread_var.get() == 1:
+                self.sense = DetectorThread(Cv2Detector())
+                for filter in self.filters:
+                    filter.set_sense(self.sense)
+            else:
+                self.sense = Cv2Recognition(Cv2Detector())
+
+        settings_menu.add_checkbutton(label="Threaded", var=thread_var, command=toggle_thread)
 
         toolbar.add_cascade(label="Settings", menu=settings_menu)
 

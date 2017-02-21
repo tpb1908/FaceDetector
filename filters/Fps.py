@@ -8,8 +8,8 @@ from filters.Filter import Filter
 class Fps(Filter):
     NAME = "Fps"
 
-    def __init__(self, width, height, active=False):
-        super(Fps, self).__init__(width, height, Fps.NAME, active)
+    def __init__(self, width, height, sense, active=False):
+        super(Fps, self).__init__(width, height, Fps.NAME, sense, active)
         self._last_frame = time.time()
 
     def process_frame(self, frame):

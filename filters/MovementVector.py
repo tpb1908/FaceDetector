@@ -11,9 +11,7 @@ class MovementVector(Filter):
     COLOR = (0, 255, 255)
 
     def __init__(self, width, height, sense, active=False):
-        super(MovementVector, self).__init__(width, height, MovementVector.NAME, active)
-        self._sense = sense
-
+        super(MovementVector, self).__init__(width, height, MovementVector.NAME, sense, active)
         self._people_positions = {}
 
     def process_frame(self, frame):

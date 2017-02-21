@@ -37,9 +37,14 @@ class DetectorThread(threading.Thread):
             if not self._alive:
                 return
             if self._next is not None:
-                self.process_faces(self._next)
-                self.process_eyes(self._next)
-                self._next = None
+                self._thread_lock.acquire()
+                
+                frame = self._next
+                self.process_faces(frame)
+                self.process_eyes(frame)
+                
+                self._thread_lock.release()
+
             time.sleep(0.005)
             # print("Is main thread? " + str(isinstance(threading.currentThread(), threading._MainThread)))
                 
@@ -49,16 +54,15 @@ class DetectorThread(threading.Thread):
         print "Stopping thread"
         self._thread_lock.release()
 
-    def update_frame(self, item):
-        self._thread_lock.acquire()
-        self._next = item
-        self._thread_lock.release()
+    def dispose(self):
+        self.kill()
 
+    def update_frame(self, frame):
+        self._next = frame.copy()
+        
     def set_detector(self, detector):
-        self._thread_lock.acquire()
         self._detection = detector
-        self._thread_lock.release()
-
+        
     def process_faces(self, frame):
         live_people = {}
         people = self._people.copy()
@@ -88,17 +92,13 @@ class DetectorThread(threading.Thread):
         for (name, person) in people.items():
             if not person.active():
                 del people[name]
-        self._thread_lock.acquire()
         self._people = people
         self._live_people = live_people
-        self._thread_lock.release()
-
+        
     def process_eyes(self, frame):
         eyes = self._detection.get_eyes(frame)
-        self._thread_lock.acquire()
         self._eyes = eyes
-        self._thread_lock.release()
-
+        
     def live_people(self):
         return self._live_people
 
