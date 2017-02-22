@@ -14,13 +14,11 @@ class Enrolment(Filter):
 
         self._images = []
         self.name = None
-        self.name = "Test name"
         self.ctr = 0
-        self.start()
 
-    def start(self):  # Start recording features
+    def start(self, name):  # Start recording features
         # self.name = raw_input("What is your name? ")
-        self.name = "person_{}".format(self.name)
+        self.name = "person_{}".format(name)
         self._images = []
         if not os.path.exists(self.name):
             os.makedirs(self.name)

@@ -23,6 +23,7 @@ from sense.thread.DetectorThread import DetectorThread
 from sense.Cv2Recognition import Cv2Recognition
 from ui.Webcam import Webcam
 from ui.NumberDialog import NumberDialog
+from ui.NameDialog import NameDialog
 
 
 class FaceDetector(object):
@@ -129,11 +130,17 @@ class FaceDetector(object):
 
         settings_menu = tk.Menu(toolbar)
 
-        def show_dialog():
+        def show_counting_line_dialog():
             NumberDialog(self.window, lambda v: self.filters[CountingLine.NAME].set_line_pos(v))
 
-        settings_menu.add_command(label="Counting line", command=show_dialog)
-        
+        settings_menu.add_command(label="Counting line", command=show_counting_line_dialog)
+
+        def show_enrolment_dialog():
+            NameDialog(self.window, lambda v: self.filters[Enrolment.NAME].start(v))
+            pass
+
+        settings_menu.add_command(label="Enrolment", command=show_enrolment_dialog)
+
         thread_var = tk.IntVar(value=1)
 
         def toggle_thread():
