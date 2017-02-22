@@ -22,13 +22,9 @@ class DetectorThread(threading.Thread):
 
         # Loading the people that we have enrolled
         self._names = {}
-        # for idx, f_dir in enumerate(glob.glob("person_*")):
-        #     self._names[idx] = f_dir.split("_")[1]
+        for idx, f_dir in enumerate(glob.glob("person_*")):
+            self._names[idx] = f_dir.split("_")[1]
 
-        names = open("names", "w+")
-        for i, line in enumerate(names):
-            self._names[i] = line
-        names.close()
         # Load face model
         with open("data/face-model.pkl", "rb") as fh:
             self.clf, self.gmm, self.thresh = Pickle.load(fh)
@@ -90,8 +86,6 @@ class DetectorThread(threading.Thread):
                 people[name] = Person(face, name)
 
             live_people[name] = people[name]
-
-        print ("Live people: ", len(live_people))
 
         # Remove inactive people
         for (name, person) in people.items():

@@ -1,4 +1,6 @@
+import os
 import cv2
+from skimage.io import imsave
 
 from filters.Filter import Filter
 
@@ -13,16 +15,18 @@ class Enrolment(Filter):
         self._images = []
         self.name = None
         self.name = "Test name"
+        self.ctr = 0
+        self.start()
 
-    def start(self): # Start recording features
-        self.name = raw_input("What is your name? ")
+    def start(self):  # Start recording features
+        # self.name = raw_input("What is your name? ")
         self.name = "person_{}".format(self.name)
-
-        names = open("names", "a")
-        names.write(self.name)
-        names.close()
-
         self._images = []
+        if not os.path.exists(self.name):
+            os.makedirs(self.name)
+        path, dirs, files = os.walk(self.name).next()
+        self.ctr = len(files)
+        print "Starting with " + str(self.ctr)
 
     def done(self):  # Complete the recording of a person
         pass
@@ -36,11 +40,13 @@ class Enrolment(Filter):
             print "Can't enrol " + str(len(people))
         else:
             person = people.itervalues().next()
-            self._images.append(person.face().features())
+            self._images.append(person.face().image())
             shape = person.shape()
             cv2.putText(
-                frame, "{}".format(len(self._images)),
+                frame, "{}/{}".format(len(self._images), self.ctr),
                 (shape.x + shape.width, shape.y + shape.height),
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
+            imsave(os.path.join(self.name, "{}_.png".format(self.ctr)), self._images[-1])
+            self.ctr += 1
             
         return frame
