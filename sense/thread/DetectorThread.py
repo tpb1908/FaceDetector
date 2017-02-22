@@ -24,7 +24,7 @@ class DetectorThread(threading.Thread):
         self._names = {}
         for idx, f_dir in enumerate(glob.glob("person_*")):
             self._names[idx] = f_dir.split("_")[1]
-
+        print("Names are " + str(self._names))
         # Load face model
         with open("data/face-model.pkl", "rb") as fh:
             self.clf, self.gmm, self.thresh = Pickle.load(fh)
@@ -70,11 +70,13 @@ class DetectorThread(threading.Thread):
         i = 0
         for face in self._detection.get_faces(frame):
             i += 1
-            is_imposter = self.gmm.score(face.features()) < self.thresh
+            score = self.gmm.score(face.features())
+            print "Score is {} Thresh is {}".format(str(score), str(self.thresh))
+            is_imposter = score < self.thresh
 
             # Get the name of the face
             name = "Imposter" + str(i)
-            # print("\n\n\nPrediction " + str(self.clf.predict(face.features())[0]) + "\n\n\n")
+
             if not is_imposter:
                 prediction = self.clf.predict(face.features())[0]
                 name = self._names[prediction]

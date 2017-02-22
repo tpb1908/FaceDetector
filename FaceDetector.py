@@ -36,7 +36,7 @@ class FaceDetector(object):
         self.sense.start()
 
         self.filters = OrderedDict()
-        self.filters[Enrolment.NAME] = Enrolment(self.webcam.width, self.webcam.height, self.sense, True)
+        self.filters[Enrolment.NAME] = Enrolment(self.webcam.width, self.webcam.height, self.sense, False)
         self.filters[FaceHighlighter.NAME] = FaceHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense,
                                                        self.webcam.height / 2, True)

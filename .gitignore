@@ -148,3 +148,5 @@ fabric.properties
 
 # Ignore person directories
 person_*
+
+*.pkl

@@ -37,6 +37,8 @@ def train():
         return dct(dct(a.T).T)
 
     # Get all images from the data set
+    print len(glob.glob("person_*"))
+    print os.getcwd()
     for i, el in enumerate(glob.glob("person_*")):
         print el, i
 
@@ -104,3 +106,5 @@ def train():
 
     with open("face-model-clf2.pkl", "wb") as fh:
         Pickle.dump([clf2, gmm, thresh], fh)
+
+train()

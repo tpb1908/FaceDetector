@@ -48,5 +48,4 @@ class Enrolment(Filter):
                 cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
             imsave(os.path.join(self.name, "{}_.png".format(self.ctr)), self._images[-1])
             self.ctr += 1
-            
         return frame

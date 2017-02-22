@@ -4,14 +4,15 @@ Created on Mon Aug 08 11:44:19 2016
 
 @author: vs26
 """
+import os
+from scipy.fftpack import dct
+from skimage import transform
+from skimage.io import imsave
+
 import cv2
 import matplotlib.pyplot as plt
-import os
-from skimage import transform
-from scipy.fftpack import dct
-from skimage.io import imsave
-import training
 
+import training
 
 plt.close('all')
 
