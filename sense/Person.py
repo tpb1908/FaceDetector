@@ -25,6 +25,9 @@ class Person(object):
         cross_up = y < line_y < prev_y
         return cross_down or cross_up
 
+    def face(self):
+        return self._face
+
     def shape(self):
         return self._face.shape()
 

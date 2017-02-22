@@ -22,9 +22,13 @@ class DetectorThread(threading.Thread):
 
         # Loading the people that we have enrolled
         self._names = {}
-        for idx, f_dir in enumerate(glob.glob("person_*")):
-            self._names[idx] = f_dir.split("_")[1]
+        # for idx, f_dir in enumerate(glob.glob("person_*")):
+        #     self._names[idx] = f_dir.split("_")[1]
 
+        names = open("names", "w+")
+        for i, line in enumerate(names):
+            self._names[i] = line
+        names.close()
         # Load face model
         with open("data/face-model.pkl", "rb") as fh:
             self.clf, self.gmm, self.thresh = Pickle.load(fh)
@@ -74,6 +78,7 @@ class DetectorThread(threading.Thread):
 
             # Get the name of the face
             name = "Imposter" + str(i)
+            # print("\n\n\nPrediction " + str(self.clf.predict(face.features())[0]) + "\n\n\n")
             if not is_imposter:
                 prediction = self.clf.predict(face.features())[0]
                 name = self._names[prediction]
@@ -98,6 +103,12 @@ class DetectorThread(threading.Thread):
     def process_eyes(self, frame):
         eyes = self._detection.get_eyes(frame)
         self._eyes = eyes
+    
+    def get_faces(self):
+        faces = []
+        for person in self._people:
+            faces.append(person.face())
+        return faces
         
     def live_people(self):
         return self._live_people
