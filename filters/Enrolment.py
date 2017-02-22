@@ -1,3 +1,5 @@
+import cv2
+
 from filters.Filter import Filter
 
 
@@ -10,6 +12,7 @@ class Enrolment(Filter):
 
         self._images = []
         self.name = None
+        self.name = "Test name"
 
     def start(self): # Start recording features
         self.name = raw_input("What is your name? ")
@@ -32,6 +35,12 @@ class Enrolment(Filter):
         if len(people) > 1 or len(people) == 0:  # We can only deal with one person
             print "Can't enrol " + str(len(people))
         else:
-            self._images.append(people[0].face().features())
+            person = people.itervalues().next()
+            self._images.append(person.face().features())
+            shape = person.shape()
+            cv2.putText(
+                frame, "{}".format(len(self._images)),
+                (shape.x + shape.width, shape.y + shape.height),
+                cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
             
         return frame

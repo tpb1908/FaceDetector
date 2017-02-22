@@ -10,6 +10,7 @@ import time
 from collections import OrderedDict
 
 from filters.CountingLine import CountingLine
+from filters.Enrolment import Enrolment
 from filters.Fps import Fps
 from filters.Info import Info
 from filters.Recolour import Recolour
@@ -35,6 +36,7 @@ class FaceDetector(object):
         self.sense.start()
 
         self.filters = OrderedDict()
+        self.filters[Enrolment.NAME] = Enrolment(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[FaceHighlighter.NAME] = FaceHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense,
                                                        self.webcam.height / 2, True)
@@ -48,7 +50,7 @@ class FaceDetector(object):
     def loop(self):
         start = time.time()
         frame, webcam_open = self.webcam.next_frame()
-        print("Get frame: " + str(1000 * (time.time() - start)))
+        # print("Get frame: " + str(1000 * (time.time() - start)))
         # Apply filters
         if webcam_open:
             self.sense.update_frame(frame)
@@ -58,7 +60,7 @@ class FaceDetector(object):
                 # print(filter_name + " " + str(1000 *(time.time() - start)))
         start = time.time()
         self.webcam.render(frame)
-        print("Render frame: " + str(1000 * (time.time() - start)))
+        # print("Render frame: " + str(1000 * (time.time() - start)))
         self.window.after(1, self.loop)
 
     def on_closing(self):
