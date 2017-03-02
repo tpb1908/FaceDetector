@@ -14,6 +14,7 @@ from sklearn.metrics import accuracy_score
 from sklearn import linear_model
 from sklearn.mixture import GMM
 import cPickle as Pickle
+from skimage import io
 
 
 # FIXME Ignoring warnings
@@ -53,7 +54,8 @@ def train():
                 print ("Can't find images...")
                 continue
 
-            face_img = cv2.imread(img_f, 0)
+            face_img = io.imread(img_f)
+            face_img = face_img.astype("float32")
 
             # 2d-dct and truncate
             face_dct = dct_2d(face_img)
