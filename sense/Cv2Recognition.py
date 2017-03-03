@@ -2,7 +2,7 @@ import cPickle as Pickle
 import glob
 
 from sense.Person import Person
-
+import sense.recognition.Cv2Recognition as recog
 
 class Cv2Recognition(object):
     def __init__(self, detection):
@@ -13,14 +13,7 @@ class Cv2Recognition(object):
         # Map of names to people in the last frame
         self._live_people = {}
 
-        # Loading the people that we have enrolled
-        self._names = {}
-        for idx, f_dir in enumerate(glob.glob("person_*")):
-            self._names[idx] = f_dir.split("_")[1]
-
-        # Load face model
-        with open("data/face-model.pkl", "rb") as fh:
-            self.clf, self.gmm, self.thresh = Pickle.load(fh)
+        self._recog = recog()
 
         self._eyes = []
 
@@ -46,13 +39,9 @@ class Cv2Recognition(object):
         i = 0
         for face in self._detection.get_faces(frame):
             i += 1
-            is_imposter = self.gmm.score(face.features()) < self.thresh
-
-            # Get the name of the face
-            name = "Imposter" + str(i)
-            if not is_imposter:
-                prediction = self.clf.predict(face.features())[0]
-                name = self._names[prediction]
+            name = self._recog.get_name(face)
+            if name == "IMPOSTER":
+                name = name + str(i)
 
             # Update/create the person
             if name in self._people:
