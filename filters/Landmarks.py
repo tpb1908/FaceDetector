@@ -20,7 +20,7 @@ class Landmarks(Filter):
             filter = super(Landmarks, self)
 
             # Get people in frame
-            matches = self._sense.live_people()
+            matches = self._sense.active_people()
 
             for _, person in matches.iteritems():
                 landmarks = self._pose_predictor(frame, person.dlib_shape())

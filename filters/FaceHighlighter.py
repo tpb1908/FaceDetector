@@ -17,7 +17,7 @@ class FaceHighlighter(Filter):
     def process_frame(self, frame):
         if not self._sense == None:
             # Get the people in frame
-            matches = self._sense.live_people()
+            matches = self._sense.active_people()
 
             for _, person in matches.iteritems():
 

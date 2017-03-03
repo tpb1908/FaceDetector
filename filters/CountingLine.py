@@ -21,7 +21,7 @@ class CountingLine(Filter):
             filter = super(CountingLine, self)
 
             # Get the people in frame
-            matches = self._sense.live_people()
+            matches = self._sense.active_people()
 
             # Draw the boundary line
             cv2.line(frame, (0, self._line_pos), (filter.width, self._line_pos),

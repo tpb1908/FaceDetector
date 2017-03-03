@@ -18,7 +18,7 @@ class MovementVector(Filter):
         if not self._sense:
             new_people_positions = {}
 
-            for (_, person) in self._sense.live_people().iteritems():
+            for (_, person) in self._sense.active_people().iteritems():
                 name = person.name()
                 if name in self._people_positions:
                     new_people_positions[name] = self._people_positions[name]

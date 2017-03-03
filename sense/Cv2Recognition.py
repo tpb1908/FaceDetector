@@ -62,7 +62,7 @@ class Cv2Recognition(object):
     def live_people(self):
         return self._live_people
 
-    def active_people(self):
+    def people(self):
         return self._people
 
     def get_eyes(self):

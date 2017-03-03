@@ -5,7 +5,6 @@ import time
 from sense.Face import Face
 from sense.detection.Detection import Detection
 
-
 class DlibDetection(Detection):
     def __init__(self):
         super(DlibDetection, self).__init__()

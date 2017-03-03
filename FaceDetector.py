@@ -21,7 +21,7 @@ from filters.Landmarks import Landmarks
 from sense.detection.Cv2Detection import Cv2Detection
 from sense.detection.DlibDetection import DlibDetection
 from sense.thread.DetectorThread import DetectorThread
-from sense.Cv2Recognition import Cv2Recognition
+from sense.Sense import Sense
 from ui.Webcam import Webcam
 from ui.NumberDialog import NumberDialog
 from ui.NameDialog import NameDialog
@@ -34,8 +34,7 @@ class FaceDetector(object):
         self.window = tk.Tk()
         self.webcam = Webcam(self.window)
 
-        self.sense = DetectorThread(Cv2Detection())
-        self.sense.start()
+        self.sense = Sense()
 
         self.filters = OrderedDict()
         self.filters[Fps.NAME] = Fps(True)
@@ -48,24 +47,21 @@ class FaceDetector(object):
         self.filters[Recolour.NAME] = Recolour(True)
 
     def loop(self):
+        # TODO: handle timing better
         start = time.time()
         frame, webcam_open = self.webcam.next_frame()
-        # print("Get frame: " + str(1000 * (time.time() - start)))
+        
         # Apply filters
         if webcam_open:
-            self.sense.update_frame(frame)
+            self.sense.process_frame(frame)
             for filter_name in self.filters:
-                # start = time.time()
                 frame = self.filters[filter_name].apply(frame)
-                # print(filter_name + " " + str(1000 *(time.time() - start)))
+        
         start = time.time()
         self.webcam.render(frame)
-        # print("Render frame: " + str(1000 * (time.time() - start)))
         self.window.after(1, self.loop)
 
     def on_closing(self):
-        print "Closing"
-        self.sense.kill()
         self.window.destroy()
 
     def run(self):
@@ -141,20 +137,20 @@ class FaceDetector(object):
 
         settings_menu.add_command(label="Enrolment", command=show_enrolment_dialog)
 
-        thread_var = tk.IntVar(value=1)
+        # thread_var = tk.IntVar(value=1)
 
-        def toggle_thread():
-            self.sense.dispose()
+        # def toggle_thread():
+        #     self.sense.dispose()
             
-            if thread_var.get() == 1:
-                self.sense = DetectorThread(Cv2Detection())
-            else:
-                self.sense = Cv2Recognition(Cv2Detection())
+        #     if thread_var.get() == 1:
+        #         self.sense = DetectorThread(Cv2Detection())
+        #     else:
+        #         self.sense = Cv2Recognition(Cv2Detection())
             
-            for filter in self.filters:
-                filter.set_sense(self.sense)
+        #     for filter in self.filters:
+        #         filter.set_sense(self.sense)
 
-        settings_menu.add_checkbutton(label="Threaded", var=thread_var, command=toggle_thread)
+        # settings_menu.add_checkbutton(label="Threaded", var=thread_var, command=toggle_thread)
 
         toolbar.add_cascade(label="Settings", menu=settings_menu)
 

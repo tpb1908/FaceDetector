@@ -33,7 +33,7 @@ class Enrolment(Filter):
         if self.name is None:  # If we aren't recording
             return frame
 
-        people = self._sense.live_people()
+        people = self._sense.active_people()
         if len(people) > 1 or len(people) == 0:  # We can only deal with one person
             print "Can't enrol " + str(len(people))
         else:

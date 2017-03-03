@@ -14,8 +14,7 @@ class EyeHighlighter(Filter):
         
     def process_frame(self, frame):
         if not self._sense == None:
-            # self._sense.process_eyes(frame)
-            eyes = self._sense.get_eyes()
+            eyes = self._sense.eyes()
             for eye in eyes:
                 shape = eye.shape()
                 cv2.rectangle(frame,
