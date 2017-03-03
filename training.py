@@ -106,7 +106,7 @@ def train():
     print "Accuracy score:"
     print accuracy_score(clf2.predict(x_test), y_test)
 
-    with open("face-model-clf2.pkl", "wb") as fh:
+    with open("data/face-model.pkl", "wb") as fh:
         Pickle.dump([clf2, gmm, thresh], fh)
 
 train()
