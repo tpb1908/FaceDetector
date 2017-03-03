@@ -1,5 +1,5 @@
 import time
-
+import dlib
 
 class Person(object):
     def __init__(self, face, name):
@@ -27,6 +27,12 @@ class Person(object):
 
     def shape(self):
         return self._face.shape()
+
+    # Returns a dlib rectange representing the position of the face
+    def dlib_shape(self):
+        shape = self.shape()
+        return dlib.rectangle(long(shape.x), long(shape.y), 
+            long(shape.x + shape.width), long(shape.y + shape.height))
 
     def centroid(self):
         return self._face.centroid()

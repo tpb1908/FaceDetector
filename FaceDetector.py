@@ -16,6 +16,7 @@ from filters.Recolour import Recolour
 from filters.EyeHighlighter import EyeHighlighter
 from filters.MovementVector import MovementVector
 from filters.FaceHighlighter import FaceHighlighter
+from filters.Landmarks import Landmarks
 from sense.detectors.Cv2Detector import Cv2Detector
 from sense.detectors.DlibDetector import DlibDetector
 from sense.thread.DetectorThread import DetectorThread
@@ -35,13 +36,14 @@ class FaceDetector(object):
         self.sense.start()
 
         self.filters = OrderedDict()
+        self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, True)
+        self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, False)
+        self.filters[MovementVector.NAME] = MovementVector(self.webcam.width, self.webcam.height, self.sense, False)
+        self.filters[Landmarks.NAME] = Landmarks(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[FaceHighlighter.NAME] = FaceHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
+        self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense,
                                                        self.webcam.height / 2, True)
-        self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
-        self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, False)
-        self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, True)
-        self.filters[MovementVector.NAME] = MovementVector(self.webcam.width, self.webcam.height, self.sense, True)
 
         self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, self.sense, True)
 
