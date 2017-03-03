@@ -24,13 +24,16 @@ class Cv2Detection(Detection):
 
     def get_faces(self, frame):
         start = time.time()
+        
         # Get face positions
         img_grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(img_grey, 1.3, 5)
 
         # Map positions to face objects
         faces = [Face(position, img_grey) for position in faces]
-        # print("CV2 detect: " + str(1000*(time.time() - start)))
+        
+        print("CV2 detect: " + str(1000*(time.time() - start)))
+        
         return faces
 
     def get_eyes(self, frame):

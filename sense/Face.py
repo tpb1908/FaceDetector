@@ -19,15 +19,15 @@ class Face(object):
         
         self._image = image
 
-        # Extract features
-        face_dct = dct(dct(image.T).T)
-        self._features = face_dct[:Face.RETAIN, :Face.RETAIN].flatten().reshape((1, -1))
-
-        # Find the centre of a face
+    # Find the centre of a face
     def centroid(self):
         return self._x + int(self._width / 2), self._y + int(self._height / 2)
 
     def features(self):
+        # Extract features
+        face_dct = dct(dct(self._image.T).T)
+        self._features = face_dct[:Face.RETAIN, :Face.RETAIN].flatten().reshape((1, -1))
+        
         return self._features
 
     def shape(self):

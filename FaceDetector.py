@@ -21,7 +21,6 @@ from filters.Landmarks import Landmarks
 
 from sense.detection.Cv2Detection import Cv2Detection
 from sense.detection.DlibDetection import DlibDetection
-from sense.thread.DetectorThread import DetectorThread
 from sense.Sense import Sense
 from sense.ThreadedSense import ThreadedSense
 
