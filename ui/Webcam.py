@@ -57,7 +57,7 @@ class Webcam(object):
     def next_frame(self):
         start = time.time()
         ret, frame = self._capture.read()
-        print("Read frame: " + str(1000 * (time.time()-start)))
+        # print("Read frame: " + str(1000 * (time.time()-start)))
         if ret:
             frame = cv2.flip(frame, 1)
             return frame, True

@@ -10,6 +10,7 @@ import time
 from collections import OrderedDict
 
 from filters.CountingLine import CountingLine
+from filters.Enrolment import Enrolment
 from filters.Fps import Fps
 from filters.Info import Info
 from filters.Recolour import Recolour
@@ -23,6 +24,7 @@ from sense.thread.DetectorThread import DetectorThread
 from sense.Cv2Recognition import Cv2Recognition
 from ui.Webcam import Webcam
 from ui.NumberDialog import NumberDialog
+from ui.NameDialog import NameDialog
 
 
 class FaceDetector(object):
@@ -36,6 +38,7 @@ class FaceDetector(object):
         self.sense.start()
 
         self.filters = OrderedDict()
+        
         self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, True)
         self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, False)
         self.filters[MovementVector.NAME] = MovementVector(self.webcam.width, self.webcam.height, self.sense, False)
@@ -44,13 +47,12 @@ class FaceDetector(object):
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense,
                                                        self.webcam.height / 2, True)
-
         self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, self.sense, True)
 
     def loop(self):
         start = time.time()
         frame, webcam_open = self.webcam.next_frame()
-        print("Get frame: " + str(1000 * (time.time() - start)))
+        # print("Get frame: " + str(1000 * (time.time() - start)))
         # Apply filters
         if webcam_open:
             self.sense.update_frame(frame)
@@ -60,7 +62,7 @@ class FaceDetector(object):
                 # print(filter_name + " " + str(1000 *(time.time() - start)))
         start = time.time()
         self.webcam.render(frame)
-        print("Render frame: " + str(1000 * (time.time() - start)))
+        # print("Render frame: " + str(1000 * (time.time() - start)))
         self.window.after(1, self.loop)
 
     def on_closing(self):
@@ -129,11 +131,17 @@ class FaceDetector(object):
 
         settings_menu = tk.Menu(toolbar)
 
-        def show_dialog():
+        def show_counting_line_dialog():
             NumberDialog(self.window, lambda v: self.filters[CountingLine.NAME].set_line_pos(v))
 
-        settings_menu.add_command(label="Counting line", command=show_dialog)
-        
+        settings_menu.add_command(label="Counting line", command=show_counting_line_dialog)
+
+        def show_enrolment_dialog():
+            NameDialog(self.window, lambda v: self.filters[Enrolment.NAME].start(v))
+            pass
+
+        settings_menu.add_command(label="Enrolment", command=show_enrolment_dialog)
+
         thread_var = tk.IntVar(value=1)
 
         def toggle_thread():

@@ -16,6 +16,8 @@ class Face(object):
         # Crop the frame to the face
         image = image[y:y + height, x:x + width] 
         image = transform.resize(image, (width, height))
+        
+        self._image = image
 
         # Extract features
         face_dct = dct(dct(image.T).T)
@@ -30,4 +32,7 @@ class Face(object):
 
     def shape(self):
         return Face.Position(self._x, self._y, self._width, self._height)
+
+    def image(self):
+        return self._image
 

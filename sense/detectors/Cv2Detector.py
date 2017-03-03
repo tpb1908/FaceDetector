@@ -30,7 +30,7 @@ class Cv2Detector(Detector):
 
         # Map positions to face objects
         faces = [Face(position, img_grey) for position in faces]
-        print("CV2 detect: " + str(1000*(time.time() - start)))
+        # print("CV2 detect: " + str(1000*(time.time() - start)))
         return faces
 
     def get_eyes(self, frame):
