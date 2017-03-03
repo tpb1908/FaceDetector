@@ -5,8 +5,8 @@ from sense.Person import Person
 
 
 class Cv2Recognition(object):
-    def __init__(self, detector):
-        self._detection = detector
+    def __init__(self, detection):
+        self._detection = detection
 
         # Map of names to active people
         self._people = {}
@@ -24,8 +24,8 @@ class Cv2Recognition(object):
 
         self._eyes = []
 
-    def set_detector(self, detector):
-        self._detection = detector
+    def set_detection(self, detection):
+        self._detection = detection
 
     def update_frame(self, frame):
         self.process_faces(frame)

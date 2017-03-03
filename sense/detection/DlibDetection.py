@@ -3,12 +3,12 @@ import dlib
 import time
 
 from sense.Face import Face
-from sense.detectors.Detector import Detector
+from sense.detection.Detection import Detection
 
 
-class DlibDetector(Detector):
+class DlibDetection(Detection):
     def __init__(self):
-        super(DlibDetector, self).__init__()
+        super(DlibDetection, self).__init__()
 
         # Create face detector
         self._detector = dlib.get_frontal_face_detector()

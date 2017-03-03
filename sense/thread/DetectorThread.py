@@ -8,11 +8,11 @@ from sense.Person import Person
 
 class DetectorThread(threading.Thread):
 
-    def __init__(self, detector):
+    def __init__(self, detection):
         threading.Thread.__init__(self)
 
         self._thread_lock = threading.Lock()
-        self._detection = detector
+        self._detection = detection
         self._next = None
 
         # Map of names to active people
@@ -60,8 +60,8 @@ class DetectorThread(threading.Thread):
     def update_frame(self, frame):
         self._next = frame.copy()
         
-    def set_detector(self, detector):
-        self._detection = detector
+    def set_detection(self, detection):
+        self._detection = detection
         
     def process_faces(self, frame):
         live_people = {}

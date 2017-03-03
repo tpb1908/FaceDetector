@@ -18,8 +18,8 @@ from filters.EyeHighlighter import EyeHighlighter
 from filters.MovementVector import MovementVector
 from filters.FaceHighlighter import FaceHighlighter
 from filters.Landmarks import Landmarks
-from sense.detectors.Cv2Detector import Cv2Detector
-from sense.detectors.DlibDetector import DlibDetector
+from sense.detection.Cv2Detection import Cv2Detection
+from sense.detection.DlibDetection import DlibDetection
 from sense.thread.DetectorThread import DetectorThread
 from sense.Cv2Recognition import Cv2Recognition
 from ui.Webcam import Webcam
@@ -34,7 +34,7 @@ class FaceDetector(object):
         self.window = tk.Tk()
         self.webcam = Webcam(self.window)
 
-        self.sense = DetectorThread(Cv2Detector())
+        self.sense = DetectorThread(Cv2Detection())
         self.sense.start()
 
         self.filters = OrderedDict()
@@ -113,20 +113,20 @@ class FaceDetector(object):
         toolbar.add_cascade(label="Filters", menu=filter_menu)
 
         # Setup detector menu
-        detector_menu = tk.Menu(toolbar)
-        detector_var = tk.StringVar(value="cv2")
+        detection_menu = tk.Menu(toolbar)
+        detection_var = tk.StringVar(value="cv2")
 
         # Detector menu callback
-        def set_detector():
-            if detector_var.get() == "cv2":
-                self.sense.set_detector(Cv2Detector())
+        def set_detection():
+            if detection_var.get() == "cv2":
+                self.sense.set_detection(Cv2Detection())
             else:
-                self.sense.set_detector(DlibDetector())
+                self.sense.set_detection(DlibDetection())
 
-        detector_menu.add_radiobutton(label="cv2", variable=detector_var, command=set_detector)
-        detector_menu.add_radiobutton(label="dlib", variable=detector_var, command=set_detector)
+        detection_menu.add_radiobutton(label="cv2", variable=detection_var, command=set_detection)
+        detection_menu.add_radiobutton(label="dlib", variable=detection_var, command=set_detection)
 
-        toolbar.add_cascade(label="Detectors", menu=detector_menu)
+        toolbar.add_cascade(label="Detection", menu=detection_menu)
 
         settings_menu = tk.Menu(toolbar)
 
@@ -147,9 +147,9 @@ class FaceDetector(object):
             self.sense.dispose()
             
             if thread_var.get() == 1:
-                self.sense = DetectorThread(Cv2Detector())
+                self.sense = DetectorThread(Cv2Detection())
             else:
-                self.sense = Cv2Recognition(Cv2Detector())
+                self.sense = Cv2Recognition(Cv2Detection())
             
             for filter in self.filters:
                 filter.set_sense(self.sense)

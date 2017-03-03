@@ -1,4 +1,4 @@
-class Detector(object):
+class Detection(object):
     def __init__(self):
         pass
 
