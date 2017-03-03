@@ -36,7 +36,7 @@ class FaceDetector(object):
         self.sense.start()
 
         self.filters = OrderedDict()
-        self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, True)
+        self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, self.sense, True)
         self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, False)
         self.filters[MovementVector.NAME] = MovementVector(self.webcam.width, self.webcam.height, self.sense, False)
         self.filters[Landmarks.NAME] = Landmarks(self.webcam.width, self.webcam.height, self.sense, True)
