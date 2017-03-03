@@ -12,44 +12,45 @@ class CountingLine(Filter):
     # Filter name
     NAME = "Counting Line"
 
-    def __init__(self, width, height, sense, line_pos, active=False):
-        super(CountingLine, self).__init__(width, height, CountingLine.NAME, sense, active)
+    def __init__(self, line_pos, active=False):
+        super(CountingLine, self).__init__(CountingLine.NAME, active)
         self._line_pos = line_pos
 
     def process_frame(self, frame):
-        filter = super(CountingLine, self)
+        if not self._sense == None:
+            filter = super(CountingLine, self)
 
-        # Get the people in frame
-        matches = self._sense.live_people()
+            # Get the people in frame
+            matches = self._sense.live_people()
 
-        # Draw the boundary line
-        cv2.line(frame, (0, self._line_pos), (filter.width, self._line_pos),
-                 CountingLine.DIVIDER_COLOUR, 1)
+            # Draw the boundary line
+            cv2.line(frame, (0, self._line_pos), (filter.width, self._line_pos),
+                    CountingLine.DIVIDER_COLOUR, 1)
 
-        for _, person in matches.iteritems():
+            for _, person in matches.iteritems():
 
-            # Check if person crossed the line
-            if person.has_crossed(self._line_pos):
-                print("{} crossed the line".format(person.name()))
-                person.increment()
+                # Check if person crossed the line
+                if person.has_crossed(self._line_pos):
+                    print("{} crossed the line".format(person.name()))
+                    person.increment()
 
-            shape = person.shape()
+                shape = person.shape()
 
-            # # Draw the bounding box
-            # cv2.rectangle(frame,
-            #               (shape.x, shape.y),
-            #               (shape.x + shape.width - 1, shape.y + shape.height - 1),
-            #               CountingLine.BOUNDING_BOX_COLOUR,
-            #               1)
-            #
-            # Draw centroid
-            cv2.circle(frame, person.centroid(), 2, CountingLine.CENTROID_COLOUR, -1)
+                # # Draw the bounding box
+                # cv2.rectangle(frame,
+                #               (shape.x, shape.y),
+                #               (shape.x + shape.width - 1, shape.y + shape.height - 1),
+                #               CountingLine.BOUNDING_BOX_COLOUR,
+                #               1)
+                #
+                # Draw centroid
+                cv2.circle(frame, person.centroid(), 2, CountingLine.CENTROID_COLOUR, -1)
 
-            # Draw name and count
-            cv2.putText(
-                frame, "{} {}".format(person.name(), person.count()),
-                (shape.x, shape.y - 5),
-                cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
+                # Draw name and count
+                cv2.putText(
+                    frame, "{} {}".format(person.name(), person.count()),
+                    (shape.x, shape.y - 5),
+                    cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 
         return frame
 

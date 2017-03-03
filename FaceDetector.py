@@ -36,16 +36,14 @@ class FaceDetector(object):
         self.sense.start()
 
         self.filters = OrderedDict()
-        self.filters[Fps.NAME] = Fps(self.webcam.width, self.webcam.height, self.sense, True)
-        self.filters[Info.NAME] = Info(self.webcam.width, self.webcam.height, False)
-        self.filters[MovementVector.NAME] = MovementVector(self.webcam.width, self.webcam.height, self.sense, False)
-        self.filters[Landmarks.NAME] = Landmarks(self.webcam.width, self.webcam.height, self.sense, True)
-        self.filters[FaceHighlighter.NAME] = FaceHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
-        self.filters[EyeHighlighter.NAME] = EyeHighlighter(self.webcam.width, self.webcam.height, self.sense, True)
-        self.filters[CountingLine.NAME] = CountingLine(self.webcam.width, self.webcam.height, self.sense,
-                                                       self.webcam.height / 2, True)
-
-        self.filters[Recolour.NAME] = Recolour(self.webcam.width, self.webcam.height, self.sense, True)
+        self.filters[Fps.NAME] = Fps(True)
+        self.filters[Info.NAME] = Info(False)
+        self.filters[MovementVector.NAME] = MovementVector(False)
+        self.filters[Landmarks.NAME] = Landmarks(True)
+        self.filters[FaceHighlighter.NAME] = FaceHighlighter(True)
+        self.filters[EyeHighlighter.NAME] = EyeHighlighter(True)
+        self.filters[CountingLine.NAME] = CountingLine(                                                       self.webcam.height / 2, True)
+        self.filters[Recolour.NAME] = Recolour(True)
 
     def loop(self):
         start = time.time()
@@ -74,7 +72,8 @@ class FaceDetector(object):
             for (_, filter) in self.filters.items():
                 filter.width = self.webcam.width
                 filter.height = self.webcam.height
-
+                filter.set_sense(self.sense)
+        resize()
         self.webcam.on_resize(resize)
 
         # Added window quit shortcut

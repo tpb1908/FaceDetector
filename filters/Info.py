@@ -9,8 +9,8 @@ class Info(Filter):
 
     NAME = "Info"
 
-    def __init__(self, width, height, sense, active=False):
-        super(Info, self).__init__(width, height, Info.NAME, sense, active)
+    def __init__(self, active=False):
+        super(Info, self).__init__(Info.NAME, active)
         self._start_time = time.time()
 
     def process_frame(self, frame):
