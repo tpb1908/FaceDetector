@@ -23,7 +23,7 @@ class DlibDetection(Detection):
         offset = int(1 / percentage_size)
         # Get all faces in frame
         faces = []
-        for position in self._detector(small_img, 1):
+        for position in self._detector(small_img, 2):
             # Convert position into (x, y, width, height)
             top, left, bottom, right = position.top(), position.left(), position.bottom(), position.right()
             face_position = (left * offset, top * offset, 
