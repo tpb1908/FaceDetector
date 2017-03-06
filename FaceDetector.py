@@ -45,7 +45,7 @@ class FaceDetector(object):
         self.filters[Landmarks.NAME] = Landmarks(True)
         self.filters[FaceHighlighter.NAME] = FaceHighlighter(True)
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(True)
-        self.filters[CountingLine.NAME] = CountingLine(                                                       self.webcam.height / 2, True)
+        self.filters[CountingLine.NAME] = CountingLine(self.webcam.height / 2, True)
         self.filters[Recolour.NAME] = Recolour(True)
 
     def loop(self):
