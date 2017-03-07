@@ -18,6 +18,7 @@ from filters.EyeHighlighter import EyeHighlighter
 from filters.MovementVector import MovementVector
 from filters.FaceHighlighter import FaceHighlighter
 from filters.Landmarks import Landmarks
+from filters.FaceTransform import FaceTransform
 
 from sense.detection.Cv2Detection import Cv2Detection
 from sense.detection.DlibDetection import DlibDetection
@@ -45,8 +46,9 @@ class FaceDetector(object):
         self.filters[Landmarks.NAME] = Landmarks(True)
         self.filters[FaceHighlighter.NAME] = FaceHighlighter(True)
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(True)
-        self.filters[CountingLine.NAME] = CountingLine(                                                       self.webcam.height / 2, True)
+        self.filters[CountingLine.NAME] = CountingLine(self.webcam.height / 2, True)
         self.filters[Recolour.NAME] = Recolour(True)
+        self.filters[FaceTransform.NAME] = FaceTransform(True)
 
     def loop(self):
         # TODO: handle timing better

@@ -1,7 +1,8 @@
 from skimage import transform
 from scipy.fftpack import dct
 from collections import namedtuple
-
+import dlib
+import numpy as np
 
 class Face(object):
     RETAIN = 8
@@ -16,8 +17,15 @@ class Face(object):
         # Crop the frame to the face
         image = image[y:y + height, x:x + width] 
         image = transform.resize(image, (width, height))
-        
         self._image = image
+
+    @property
+    def landmarks(self):
+        return self._landmarks
+
+    @landmarks.setter
+    def landmarks(self, lm):
+        self._landmarks = lm
 
     # Find the centre of a face
     def centroid(self):
@@ -33,6 +41,12 @@ class Face(object):
     def shape(self):
         return Face.Position(self._x, self._y, self._width, self._height)
 
+    def dlib_rect(self):
+    
+        return dlib.rectangle(self._x, self._y, self._x + self._width,self._y +  self._height)
+
     def image(self):
         return self._image
 
+    def uint8_image(self):
+        return (self._image * 255).astype(np.uint8)

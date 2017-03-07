@@ -28,8 +28,8 @@ class DlibDetection(Detection):
             top, left, bottom, right = position.top(), position.left(), position.bottom(), position.right()
             face_position = (left * offset, top * offset, 
                 (right - left) * offset, (bottom - top) * offset)
-
-            faces.append(Face(face_position, img_grey))
+            if(left > 0 and top > 0 and bottom < frame.shape[1] and right < frame.shape[0]):
+                faces.append(Face(face_position, img_grey))
         
         print("Dlib detect: " + str(1000*(time.time() - start)))
         return faces

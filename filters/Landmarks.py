@@ -8,12 +8,10 @@ from filters.Filter import Filter
 class Landmarks(Filter):
     NAME = "Landmarks"
     PREDICTOR_MODEL = "data/shape_predictor_68_face_landmarks.dat"
+    POSE_PREDICTOR = shape_predictor(PREDICTOR_MODEL)
 
     def __init__(self, active=False):
-        # TODO: remove width and height from here, we get it else where now
         super(Landmarks, self).__init__(Landmarks.NAME, active)
-
-        self._pose_predictor = shape_predictor(Landmarks.PREDICTOR_MODEL)
 
     def process_frame(self, frame):
         if not self._sense == None:
@@ -23,7 +21,11 @@ class Landmarks(Filter):
             matches = self._sense.active_people()
 
             for _, person in matches.iteritems():
-                landmarks = self._pose_predictor(frame, person.dlib_shape())
+                # Get landmarks
+                landmarks = Landmarks.POSE_PREDICTOR(frame, person.dlib_shape())
+                person.face().landmarks = landmarks
+
+                # Draw landmarks
                 landmarks = np.matrix([[p.x, p.y] for p in landmarks.parts()])
                 for idx, point in enumerate(landmarks):
                     position = (point[0, 0], point[0, 1])
