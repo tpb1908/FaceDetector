@@ -22,7 +22,7 @@ class Webcam(object):
 
         self._capture = cv2.VideoCapture()
         self._capture.set(cv2.cv.CV_CAP_PROP_FPS, 30)
-        self.open(1)
+        self.open()
 
     def _set_size(self):
         # Sets the width and height of webcam frame

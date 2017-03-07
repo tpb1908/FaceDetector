@@ -48,7 +48,7 @@ class FaceDetector(object):
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(True)
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.height / 2, True)
         self.filters[Recolour.NAME] = Recolour(True)
-        self.filters[FaceTransform.NAME] = FaceTransform(True)
+        self.filters[FaceTransform.NAME] = FaceTransform(False)
 
     def loop(self):
         # TODO: handle timing better

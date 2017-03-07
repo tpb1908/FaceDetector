@@ -27,8 +27,17 @@ class Landmarks(Filter):
 
                 # Draw landmarks
                 landmarks = np.matrix([[p.x, p.y] for p in landmarks.parts()])
+
+                last = None
                 for idx, point in enumerate(landmarks):
+                    if last is not None:
+                        cv2.line(frame, (point.item(0), point.item(1)), (last.item(0), last.item(1)), (0, 255, 0), 1)
                     position = (point[0, 0], point[0, 1])
                     cv2.circle(frame, position, 3, color=(0, 255, 255))
+                    # http://openface-api.readthedocs.io/en/latest/_images/dlib-landmark-mean.png
+                    if idx in [16, 21, 26, 30, 35, 41, 47, 67]:
+                        last = None
+                    else:
+                        last = point[0]
 
         return frame
