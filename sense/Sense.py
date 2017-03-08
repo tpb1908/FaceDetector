@@ -57,3 +57,6 @@ class Sense(object):
     # TODO: merge with person
     def eyes(self):
         return self._eyes
+
+    def detect_time(self):
+        return self._detection.detect_time()

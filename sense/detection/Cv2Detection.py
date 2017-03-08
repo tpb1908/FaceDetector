@@ -21,6 +21,7 @@ class Cv2Detection(Detection):
         self.eye_cascade = cv2.CascadeClassifier()
         assert self.face_cascade.load(os.getcwd() + Cv2Detection.FACE_HAAR_CASCADE_FACE_XML)
         assert self.eye_cascade.load(os.getcwd() + Cv2Detection.EYE_HAAR_CASCADE_FACE_XML)
+        self._last_update_time = 0
 
     def get_faces(self, frame):
         start = time.time()
@@ -31,14 +32,14 @@ class Cv2Detection(Detection):
 
         # Map positions to face objects
         faces = [Face(position, img_grey) for position in faces]
-        
-        print("CV2 detect: " + str(1000*(time.time() - start)))
-        
+
+        self._last_update_time = 1000*(time.time() - start)
         return faces
 
     def get_eyes(self, frame):
         img_grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY, frame, cv2.COLOR_BGR2GRAY)
         return [Eye(position) for position in self.eye_cascade.detectMultiScale(img_grey, 1.3, 5)]
 
-
+    def detect_time(self):
+        return self._last_update_time
 
