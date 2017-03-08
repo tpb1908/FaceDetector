@@ -5,32 +5,29 @@ Created on Wed Oct 05 12:46:24 2016
 @author: johnsona15
 """
 import Tkinter as tk
-import warnings
 import time
+import warnings
 from collections import OrderedDict
 
 from filters.CountingLine import CountingLine
 from filters.Enrolment import Enrolment
+from filters.EyeHighlighter import EyeHighlighter
+from filters.FaceHighlighter import FaceHighlighter
+from filters.FaceTransform import FaceTransform
 from filters.Fps import Fps
 from filters.Info import Info
-from filters.Recolour import Recolour
-from filters.EyeHighlighter import EyeHighlighter
-from filters.MovementVector import MovementVector
-from filters.FaceHighlighter import FaceHighlighter
 from filters.Landmarks import Landmarks
-from filters.FaceTransform import FaceTransform
-
-from sense.detection.Cv2Detection import Cv2Detection
-from sense.detection.DlibDetection import DlibDetection
+from filters.Recolour import Recolour
+from modes.Capture import Capture
+from modes.Main import Main
 from sense.Sense import Sense
 from sense.ThreadedSense import ThreadedSense
-from ui.Webcam import Webcam
-from ui.NumberDialog import NumberDialog
+from sense.detection.Cv2Detection import Cv2Detection
+from sense.detection.DlibDetection import DlibDetection
 from ui.NameDialog import NameDialog
+from ui.NumberDialog import NumberDialog
+from ui.Webcam import Webcam
 
-from ui.Mode import Mode
-from ui.Capture import Capture
-from ui.Main import Main
 
 class FaceDetector(object):
     DEBUG = False

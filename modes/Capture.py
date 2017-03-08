@@ -1,10 +1,10 @@
-from ui.Mode import Mode
+from filters.FaceHighlighter import FaceHighlighter
+from filters.FaceTransform import FaceTransform
 from filters.Fps import Fps
 from filters.Info import Info
-from filters.Recolour import Recolour
-from filters.FaceHighlighter import FaceHighlighter
 from filters.Landmarks import Landmarks
-from filters.FaceTransform import FaceTransform
+from filters.Recolour import Recolour
+from modes.Mode import Mode
 
 
 class Capture(Mode):
