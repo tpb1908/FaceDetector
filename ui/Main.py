@@ -1,5 +1,4 @@
 from ui.Mode import Mode
-from collections import OrderedDict
 from filters.Fps import Fps
 from filters.Info import Info
 from filters.Recolour import Recolour
@@ -8,6 +7,7 @@ from filters.FaceHighlighter import FaceHighlighter
 from filters.Landmarks import Landmarks
 from filters.FaceTransform import FaceTransform
 from filters.CountingLine import CountingLine
+
 
 class Main(Mode):
 

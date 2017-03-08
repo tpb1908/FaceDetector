@@ -123,7 +123,7 @@ class FaceDetector(object):
 
         mode_menu = tk.Menu(toolbar)
 
-        for key, mode in enumerate(self.modes):
+        for _, key in enumerate(self.modes):
             mode_menu.add_radiobutton(label=key, variable=self.active_mode, command=update_filters)
         toolbar.add_cascade(label="Modes", menu=mode_menu)
 
