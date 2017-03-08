@@ -5,6 +5,7 @@ from dlib import shape_predictor
 
 from filters.Filter import Filter
 
+
 class Landmarks(Filter):
     NAME = "Landmarks"
     PREDICTOR_MODEL = "data/shape_predictor_68_face_landmarks.dat"
@@ -14,8 +15,7 @@ class Landmarks(Filter):
         super(Landmarks, self).__init__(Landmarks.NAME, active)
 
     def process_frame(self, frame):
-        if not self._sense == None:
-            filter = super(Landmarks, self)
+        if self._sense is not None:
 
             # Get people in frame
             matches = self._sense.active_people()
@@ -47,6 +47,6 @@ class Landmarks(Filter):
                         last = None
                         cv2.line(frame, (point.item(0), point.item(1)), (start.item(0), start.item(1)), (0, 255, 0), 1)
                     else:
-                        last = point[0]    
+                        last = point[0]
 
         return frame

@@ -5,6 +5,7 @@ import time
 from sense.Face import Face
 from sense.detection.Detection import Detection
 
+
 class DlibDetection(Detection):
     def __init__(self):
         super(DlibDetection, self).__init__()
@@ -26,11 +27,10 @@ class DlibDetection(Detection):
         for position in self._detector(small_img, 1):
             # Convert position into (x, y, width, height)
             top, left, bottom, right = position.top(), position.left(), position.bottom(), position.right()
-            face_position = (left * offset, top * offset, 
-                (right - left) * offset, (bottom - top) * offset)
-            if(left > 0 and top > 0 and bottom < frame.shape[1] and right < frame.shape[0]):
+            face_position = (left * offset, top * offset,
+                             (right - left) * offset, (bottom - top) * offset)
+            if left > 0 and top > 0 and bottom < frame.shape[1] and right < frame.shape[0]:
                 faces.append(Face(face_position, img_grey))
-        
-        print("Dlib detect: " + str(1000*(time.time() - start)))
-        return faces
 
+        print("Dlib detect: " + str(1000 * (time.time() - start)))
+        return faces

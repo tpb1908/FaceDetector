@@ -3,6 +3,7 @@ import glob
 
 from sense.recognition.Recognition import Recognition
 
+
 class Cv2Recognition(Recognition):
     def __init__(self):
         super(Cv2Recognition, self).__init__()

@@ -10,11 +10,11 @@ from modes.Mode import Mode
 
 
 class Main(Mode):
-
     NAME = "Main"
 
     def __init__(self):
         super(Main, self).__init__()
 
     def filters(self):
-        return [Fps.NAME, Info.NAME, Landmarks.NAME, FaceHighlighter.NAME, EyeHighlighter.NAME, CountingLine.NAME, Recolour.NAME, FaceTransform.NAME]
+        return [Fps.NAME, Info.NAME, Landmarks.NAME, FaceHighlighter.NAME, EyeHighlighter.NAME, CountingLine.NAME,
+                Recolour.NAME, FaceTransform.NAME]

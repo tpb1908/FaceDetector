@@ -14,7 +14,7 @@ class Webcam(object):
         self._widget.pack()
 
         def on_click(event):
-            print "Event"
+            print "Event " + str(event)
 
         self._widget.bind("<Button 1>", on_click)
 

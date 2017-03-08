@@ -54,18 +54,17 @@ class FaceDetector(object):
         self.filters[Recolour.NAME] = Recolour(True)
         self.filters[FaceTransform.NAME] = FaceTransform(False)
 
-
     def loop(self):
         # TODO: handle timing better
         start = time.time()
         frame, webcam_open = self.webcam.next_frame()
-        
+
         # Apply filters
         if webcam_open:
             self.sense.process_frame(frame)
             for filter in self.get_filters():
                 frame = filter.apply(frame)
-        
+
         start = time.time()
         self.webcam.render(frame)
         self.window.after(1, self.loop)
@@ -76,11 +75,13 @@ class FaceDetector(object):
     def run(self):
         filter_menu = tk.Menu(self.window)
         filter_count = [0]  # We can't update  the count in update_filters
+
         # Toggle filter menu callback
 
         def toggle_filter(name, on_var):
             def callback():
                 self.filters[name].set_active(on_var.get())
+
             return callback
 
         def update_filters():
@@ -163,7 +164,7 @@ class FaceDetector(object):
                 self.sense = Sense()
             else:
                 self.sense = ThreadedSense()
-            
+
             update_filters()
 
         settings_menu.add_checkbutton(label="Threaded", var=thread_var, command=toggle_thread)

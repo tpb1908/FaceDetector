@@ -8,7 +8,6 @@ from modes.Mode import Mode
 
 
 class Capture(Mode):
-
     NAME = "Capture"
 
     def __init__(self):
