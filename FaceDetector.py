@@ -44,8 +44,19 @@ class FaceDetector(object):
         self.active_mode = tk.StringVar(value=Main.NAME)
 
         self.modes = OrderedDict()
-        self.modes[Main.NAME] = Main(self.webcam.height)
+        self.modes[Main.NAME] = Main()
         self.modes[Capture.NAME] = Capture()
+
+        self.filters = OrderedDict()
+        self.filters[Fps.NAME] = Fps(True)
+        self.filters[Info.NAME] = Info(False)
+        self.filters[Landmarks.NAME] = Landmarks(True)
+        self.filters[FaceHighlighter.NAME] = FaceHighlighter(True)
+        self.filters[EyeHighlighter.NAME] = EyeHighlighter(True)
+        self.filters[CountingLine.NAME] = CountingLine(self.webcam.height / 2, True)
+        self.filters[Recolour.NAME] = Recolour(True)
+        self.filters[FaceTransform.NAME] = FaceTransform(False)
+
 
     def loop(self):
         # TODO: handle timing better
@@ -55,8 +66,8 @@ class FaceDetector(object):
         # Apply filters
         if webcam_open:
             self.sense.process_frame(frame)
-            for filter_name in self.modes[self.active_mode.get()].filters():
-                frame = self.modes[self.active_mode.get()].filters()[filter_name].apply(frame)
+            for filter in self.get_filters():
+                frame = filter.apply(frame)
         
         start = time.time()
         self.webcam.render(frame)
@@ -67,20 +78,26 @@ class FaceDetector(object):
 
     def run(self):
         filter_menu = None
+
+        # Toggle filter menu callback
+        def toggle_filter(name, on_var):
+            def callback():
+                self.filters[name].set_active(on_var.get())
+            return callback
+
         def update_filters():
-            filter_menu.clear()
-            
-            for (_, filter) in self.modes[self.active_mode.get()].filters().iteritems():
+            for filter in self.get_filters():
                 filter.width = self.webcam.width
                 filter.height = self.webcam.height
                 filter.set_sense(self.sense)
-                    filter_menu = tk.Menu(toolbar)
-            for i, name in enumerate(self.modes[self.active_mode.get()].filters()):
+
+            filter_menu = tk.Menu(self.window)
+            for filter in self.get_filters():
                 # Create menu item for filter
-                menu_item_on = tk.BooleanVar(value=self.modes[self.active_mode.get()].filters()[name].is_active())
+                menu_item_on = tk.BooleanVar(value=filter.is_active())
                 filter_menu.add_checkbutton(
-                    label=name,
-                    command=toggle_filter(name, menu_item_on),
+                    label=filter.NAME,
+                    command=toggle_filter(filter.NAME, menu_item_on),
                     variable=menu_item_on,
                     onvalue=True,
                     offvalue=False)
@@ -104,18 +121,11 @@ class FaceDetector(object):
         toolbar.add_cascade(label="Webcam", menu=webcam_menu)
 
 
-        mode_menu = tk.menu(toolbar)
-        mode_menu.add_command(label)
+        mode_menu = tk.Menu(toolbar)
 
         for key, mode in enumerate(self.modes):
             mode_menu.add_radiobutton(label=key, variable=self.active_mode, command=update_filters)
-        toolbar.add_cascade(label="Modes", mode_menu)
-
-        # Toggle filter menu callback
-        def toggle_filter(name, on_var):
-            def callback():
-                self.modes[self.active_mode.get()].filters()[name].set_active(on_var.get())
-            return callback
+        toolbar.add_cascade(label="Modes", menu=mode_menu)
 
         # Setup filter menu
         toolbar.add_cascade(label="Filters", menu=filter_menu)
@@ -139,12 +149,12 @@ class FaceDetector(object):
         settings_menu = tk.Menu(toolbar)
 
         def show_counting_line_dialog():
-            NumberDialog(self.window, lambda v: self.modes[self.active_mode.get()].filters()[CountingLine.NAME].set_line_pos(v))
+            NumberDialog(self.window, lambda v: self.filters[CountingLine.NAME].set_line_pos(v))
 
         settings_menu.add_command(label="Counting line", command=show_counting_line_dialog)
 
         def show_enrolment_dialog():
-            NameDialog(self.window, lambda v: self.modes[self.active_mode.get()].filters()[Enrolment.NAME].start(v))
+            NameDialog(self.window, lambda v: self.filters[Enrolment.NAME].start(v))
             pass
 
         settings_menu.add_command(label="Enrolment", command=show_enrolment_dialog)
@@ -168,6 +178,13 @@ class FaceDetector(object):
         # Start window
         self.loop()
         self.window.mainloop()
+
+    def get_filters(self):
+        filtered = []
+        for key, value in self.filters.items():
+            if key in self.modes[self.active_mode.get()].filters():
+                filtered.append(value)
+        return filtered
 
 
 if __name__ == "__main__":

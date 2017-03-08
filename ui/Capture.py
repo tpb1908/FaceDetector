@@ -15,13 +15,5 @@ class Capture(Mode):
     def __init__(self):
         super(Capture, self).__init__()
 
-        self._filters = OrderedDict()
-        self._filters[Fps.NAME] = Fps(True)
-        self._filters[Info.NAME] = Info(False)
-        self._filters[Landmarks.NAME] = Landmarks(True)
-        self._filters[FaceHighlighter.NAME] = FaceHighlighter(True)
-        self._filters[FaceTransform.NAME] = FaceTransform(False)
-        self._filters[Recolour.NAME] = Recolour(True)
-
-    def get_filters(self):
-        return self._filters
+    def filters(self):
+        return [Fps.NAME, Info.NAME, Landmarks.NAME, FaceHighlighter.NAME, FaceTransform.NAME, Recolour.NAME]
