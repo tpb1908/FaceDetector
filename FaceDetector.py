@@ -77,23 +77,23 @@ class FaceDetector(object):
         self.window.destroy()
 
     def run(self):
-        filter_menu = None
-
+        filter_menu = tk.Menu(self.window)
+        filter_count = [0]  # We can't update  the count in update_filters
         # Toggle filter menu callback
+
         def toggle_filter(name, on_var):
             def callback():
                 self.filters[name].set_active(on_var.get())
             return callback
 
         def update_filters():
+            if filter_count[0] != 0:
+                filter_menu.delete(0, filter_count[0])
             for filter in self.get_filters():
                 filter.width = self.webcam.width
                 filter.height = self.webcam.height
                 filter.set_sense(self.sense)
 
-            filter_menu = tk.Menu(self.window)
-            for filter in self.get_filters():
-                # Create menu item for filter
                 menu_item_on = tk.BooleanVar(value=filter.is_active())
                 filter_menu.add_checkbutton(
                     label=filter.NAME,
@@ -101,8 +101,8 @@ class FaceDetector(object):
                     variable=menu_item_on,
                     onvalue=True,
                     offvalue=False)
-        update_filters()
-        
+                filter_count[0] += 1
+
         # Setup resize event
         self.webcam.on_resize(update_filters)
 
@@ -120,7 +120,6 @@ class FaceDetector(object):
         webcam_menu.add_command(label="Close", command=self.webcam.close)
         toolbar.add_cascade(label="Webcam", menu=webcam_menu)
 
-
         mode_menu = tk.Menu(toolbar)
 
         for _, key in enumerate(self.modes):
@@ -128,6 +127,7 @@ class FaceDetector(object):
         toolbar.add_cascade(label="Modes", menu=mode_menu)
 
         # Setup filter menu
+        update_filters()
         toolbar.add_cascade(label="Filters", menu=filter_menu)
 
         # Setup detector menu
