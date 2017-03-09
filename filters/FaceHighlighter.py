@@ -1,5 +1,5 @@
 import cv2
-
+import modes.Main as Main
 from filters.Filter import Filter
 
 
@@ -33,9 +33,10 @@ class FaceHighlighter(Filter):
                 # cv2.circle(frame, person.centroid(), 2, FaceHighlighter.CENTROID_COLOUR, -1)
 
                 # Draw name and count
-                cv2.putText(
-                    frame, "{}".format(person.name()),
-                    (shape.x, shape.y - 5),
-                    cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
+                if self._mode == Main.Main.NAME:
+                    cv2.putText(
+                        frame, "{}".format(person.name()),
+                        (shape.x, shape.y - 5),
+                        cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 
         return frame

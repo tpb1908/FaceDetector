@@ -91,6 +91,7 @@ class FaceDetector(object):
                 filter.width = self.webcam.width
                 filter.height = self.webcam.height
                 filter.set_sense(self.sense)
+                filter.set_mode(self.active_mode)
 
                 menu_item_on = tk.BooleanVar(value=filter.is_active())
                 filter_menu.add_checkbutton(
