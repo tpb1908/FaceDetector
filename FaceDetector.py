@@ -91,7 +91,7 @@ class FaceDetector(object):
                 filter.width = self.webcam.width
                 filter.height = self.webcam.height
                 filter.set_sense(self.sense)
-                filter.set_mode(self.active_mode)
+                filter.set_mode(self.modes[self.active_mode.get()])
 
                 menu_item_on = tk.BooleanVar(value=filter.is_active())
                 filter_menu.add_checkbutton(
@@ -153,7 +153,7 @@ class FaceDetector(object):
         settings_menu.add_command(label="Counting line", command=show_counting_line_dialog)
 
         def show_enrolment_dialog():
-            NameDialog(self.window, lambda v: self.filters[Enrolment.NAME].start(v))
+            NameDialog(self.window, lambda v: self.modes[Capture.NAME].set_enrollee(v))
             pass
 
         settings_menu.add_command(label="Enrolment", command=show_enrolment_dialog)
