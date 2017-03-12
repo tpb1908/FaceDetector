@@ -3,7 +3,8 @@ from scipy.fftpack import dct
 from collections import namedtuple
 import dlib
 import numpy as np
-
+from filters.FaceTransform import FaceTransform
+import openface
 
 class Face(object):
     RETAIN = 8
@@ -50,3 +51,16 @@ class Face(object):
 
     def uint8_image(self):
         return (self._image * 255).astype(np.uint8)
+
+    def aligned_face(self):
+        shape = self.shape()
+        landmarks = self.landmarks
+        if landmarks is None: return
+
+        aligned = FaceTransform.FACE_ALIGNER.align(
+            shape.width, 
+            self.uint8_image(),
+            dlib.rectangle(0, 0, shape.width, shape.width),
+            landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+
+        return aligned

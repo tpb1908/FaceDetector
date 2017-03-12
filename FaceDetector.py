@@ -18,16 +18,18 @@ from filters.Fps import Fps
 from filters.Info import Info
 from filters.Landmarks import Landmarks
 from filters.Recolour import Recolour
+
 from modes.Capture import Capture
 from modes.Main import Main
+
 from sense.Sense import Sense
 from sense.ThreadedSense import ThreadedSense
 from sense.detection.Cv2Detection import Cv2Detection
 from sense.detection.DlibDetection import DlibDetection
+
 from ui.NameDialog import NameDialog
 from ui.NumberDialog import NumberDialog
 from ui.Webcam import Webcam
-
 
 class FaceDetector(object):
     DEBUG = False
@@ -53,6 +55,7 @@ class FaceDetector(object):
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.height / 2, True)
         self.filters[Recolour.NAME] = Recolour(True)
         self.filters[FaceTransform.NAME] = FaceTransform(False)
+        self.filters[Enrolment.NAME] = Enrolment(False)
 
     def loop(self):
         # TODO: handle timing better
@@ -87,6 +90,7 @@ class FaceDetector(object):
         def update_filters():
             if filter_count[0] != 0:
                 filter_menu.delete(0, filter_count[0])
+            
             for filter in self.get_filters():
                 filter.width = self.webcam.width
                 filter.height = self.webcam.height
@@ -115,7 +119,9 @@ class FaceDetector(object):
         # Setup webcam menu 
         webcam_menu = tk.Menu(toolbar)
         webcam_menu.add_command(label="Open", command=self.webcam.open)
-        webcam_menu.add_command(label="Video", command=lambda: self.webcam.open('data/Sample.mp4'))
+        webcam_menu.add_command(label="Sample 1", command=lambda: self.webcam.open('data/Sample.mp4'))
+        webcam_menu.add_command(label="Sample 2", command=lambda: self.webcam.open('data/sample2.mpeg'))
+        webcam_menu.add_command(label="Sample 3", command=lambda: self.webcam.open('data/sample3.mp4'))
         webcam_menu.add_command(label="Close", command=self.webcam.close)
         toolbar.add_cascade(label="Webcam", menu=webcam_menu)
 
@@ -152,8 +158,19 @@ class FaceDetector(object):
 
         settings_menu.add_command(label="Counting line", command=show_counting_line_dialog)
 
+        def train():
+            # do some training
+            pass
+
+        settings_menu.add_command(label="Train", comman=train)
+
         def show_enrolment_dialog():
-            NameDialog(self.window, lambda v: self.modes[Capture.NAME].set_enrollee(v))
+            def updateName(v):
+                print "Setting name to: " + v
+                self.modes[Capture.NAME].set_enrollee(v)
+                self.filters[Enrolment.NAME].set_name(v)
+
+            NameDialog(self.window, updateName)
             pass
 
         settings_menu.add_command(label="Enrolment", command=show_enrolment_dialog)

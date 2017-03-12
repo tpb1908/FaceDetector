@@ -11,6 +11,13 @@ class Main(Mode):
 
     def filters(self):
 
-        return [filters.Fps.Fps.NAME, filters.Info.Info.NAME, filters.Landmarks.Landmarks.NAME, filters.FaceHighlighter.FaceHighlighter.NAME,
-                filters.EyeHighlighter.EyeHighlighter.NAME, filters.CountingLine.CountingLine.NAME,
-                filters.Recolour.Recolour.NAME, filters.FaceTransform.FaceTransform.NAME]
+        return [
+            filters.Fps.Fps.NAME, 
+            filters.Info.Info.NAME, 
+            filters.Landmarks.Landmarks.NAME, 
+            filters.FaceHighlighter.FaceHighlighter.NAME,
+            filters.EyeHighlighter.EyeHighlighter.NAME, 
+            filters.CountingLine.CountingLine.NAME,
+            filters.Recolour.Recolour.NAME, 
+            filters.FaceTransform.FaceTransform.NAME
+        ]

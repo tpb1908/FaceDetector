@@ -10,9 +10,15 @@ class Capture(Mode):
         self._enrollee = None
 
     def filters(self):
-        return [filters.Fps.Fps.NAME, filters.Info.Info.NAME, filters.Landmarks.Landmarks.NAME,
-                filters.FaceHighlighter.FaceHighlighter.NAME, filters.FaceTransform.FaceTransform.NAME,
-                filters.Recolour.Recolour.NAME]
+        return [
+            filters.Fps.Fps.NAME, 
+            filters.Info.Info.NAME, 
+            filters.Landmarks.Landmarks.NAME,
+            filters.FaceHighlighter.FaceHighlighter.NAME, 
+            filters.FaceTransform.FaceTransform.NAME,
+            filters.Recolour.Recolour.NAME,
+            filters.Enrolment.Enrolment.NAME,
+        ]
 
     def enrollee(self):
         return self._enrollee

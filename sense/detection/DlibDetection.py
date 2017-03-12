@@ -19,7 +19,7 @@ class DlibDetection(Detection):
         img_grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # Reduce image size to speed up detector
-        percentage_size = 0.2
+        percentage_size = 0.5
         small_img = cv2.resize(img_grey, (0, 0), fx=percentage_size, fy=percentage_size)
 
         offset = int(1 / percentage_size)
