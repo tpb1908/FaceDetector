@@ -3,14 +3,15 @@ from sense.Person import Person
 from sense.detection.DlibDetection import DlibDetection
 from sense.recognition.Cv2Recognition import Cv2Recognition
 
+
 class Sense(object):
     def __init__(self, detection=DlibDetection(), recogniton=Cv2Recognition()):
         self._detection = detection
         self._recognition = recogniton
-        
+
         # TODO: can we remove this?
-        self._people = {}           # People that have been in a frame recently
-        self._active_people = {}    # People in the latest frame
+        self._people = {}  # People that have been in a frame recently
+        self._active_people = {}  # People in the latest frame
 
         self._eyes = []
 
@@ -32,7 +33,7 @@ class Sense(object):
             name = self._recognition.get_name(face)
             # TODO: instead of updating people by name, update people by id.
             if name == "IMPOSTER":
-                name = name + str(i)
+                name += str(i)
                 i += 1
 
             # Update/create the person
@@ -45,8 +46,8 @@ class Sense(object):
         # Remove inactive people
         for (name, person) in self._people.items():
             if not person.active():
-                del self._people[name]     
-        
+                del self._people[name]
+
     def people(self):
         return self._people
 
@@ -57,4 +58,5 @@ class Sense(object):
     def eyes(self):
         return self._eyes
 
-    
+    def detect_time(self):
+        return self._detection.detect_time()

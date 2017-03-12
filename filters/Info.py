@@ -11,13 +11,12 @@ class Info(Filter):
 
     def __init__(self, active=False):
         super(Info, self).__init__(Info.NAME, active)
-        self._start_time = time.time()
 
     def process_frame(self, frame):
         width, height, channels = frame.shape
         cv2.putText(
             frame,
-            "W{} H{} C{} T{}".format(width, height, channels, round(time.time()-self._start_time, 2)),
+            "W{} H{} C{} T{}".format(width, height, channels, round(self._sense.detect_time(), 3)),
             (10, 20),
             cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 

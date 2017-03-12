@@ -11,6 +11,7 @@ import bench
 
 sample = 0
 
+
 def loop():
     global sample
 
@@ -21,22 +22,23 @@ def loop():
     print "Start loop"
 
     frame = np.zeros((600, 800, 3), np.uint8)
-    
+
     bench.begin()
     image = QImage(frame.tostring(), 800, 600, QImage.Format_RGB888).rgbSwapped()
     bench.end("image = QImage(frame.tostring(), 800, 600, QImage.Format_RGB888).rgbSwapped()")
-    
+
     bench.begin()
     pixmap = QPixmap.fromImage(image)
     bench.end("pixmap = QPixmap.fromImage(image)")
-    
+
     bench.begin()
     label.setPixmap(pixmap)
     bench.end("label.setPixmap(pixmap)")
-    
-    sample+=1
+
+    sample += 1
 
     print "End loop\n"
+
 
 if __name__ == '__main__':
     # Create window

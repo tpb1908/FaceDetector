@@ -13,6 +13,7 @@ label = tk.Label(window)
 label.pack()
 sample = 0
 
+
 def loop():
     global sample
 
@@ -40,10 +41,11 @@ def loop():
     label.configure(image=tkimage)
     bench.end("label.configure(image=tkimage)")
 
-    sample+=1
+    sample += 1
     print "End loop\n"
 
     window.after(1, loop)
+
 
 loop()
 window.mainloop()

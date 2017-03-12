@@ -8,3 +8,5 @@ class Detection(object):
     def get_eyes(self, frame):
         return []
 
+    def detect_time(self):
+        pass

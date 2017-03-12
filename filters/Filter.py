@@ -7,7 +7,11 @@ class Filter(object):
         self._name = name
         self._sense = None
         self._is_active = active
+        self._mode = None
         pass
+
+    def set_mode(self, mode):
+        self._mode = mode
 
     def set_sense(self, sense):
         self._sense = sense

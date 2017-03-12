@@ -17,7 +17,7 @@ class CountingLine(Filter):
         self._line_pos = line_pos
 
     def process_frame(self, frame):
-        if not self._sense == None:
+        if self._sense is not None:
             filter = super(CountingLine, self)
 
             # Get the people in frame
@@ -25,7 +25,7 @@ class CountingLine(Filter):
 
             # Draw the boundary line
             cv2.line(frame, (0, self._line_pos), (filter.width, self._line_pos),
-                    CountingLine.DIVIDER_COLOUR, 1)
+                     CountingLine.DIVIDER_COLOUR, 1)
 
             for _, person in matches.iteritems():
 
@@ -56,4 +56,4 @@ class CountingLine(Filter):
 
     def set_line_pos(self, pos):
         print("Line pos set to " + str(pos))
-        self._line_pos = int(self._height * pos/100)
+        self._line_pos = int(self._height * pos / 100)
