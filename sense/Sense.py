@@ -5,7 +5,7 @@ from sense.recognition.Cv2Recognition import Cv2Recognition
 from sense.recognition.OpenfaceRecognition import OpenfaceRecognition
 
 class Sense(object):
-    def __init__(self, detection=DlibDetection(), recogniton=OpenfaceRecognition()):
+    def __init__(self, detection=DlibDetection(), recogniton=Cv2Recognition()):
         self._detection = detection
         self._recognition = recogniton
 

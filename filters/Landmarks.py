@@ -8,7 +8,7 @@ from filters.Filter import Filter
 
 class Landmarks(Filter):
     NAME = "Landmarks"
-    PREDICTOR_MODEL = "data/shape_predictor_68_face_landmarks.dat"
+    PREDICTOR_MODEL = "data/dlib_shape.dat"
     POSE_PREDICTOR = shape_predictor(PREDICTOR_MODEL)
 
     def __init__(self, active=False):
