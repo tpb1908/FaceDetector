@@ -23,7 +23,7 @@ class Landmarks(Filter):
             for _, person in matches.iteritems():
                 # Get landmarks
                 landmarks = Landmarks.POSE_PREDICTOR(frame, person.dlib_shape())
-                person.face().landmarks = landmarks
+                # person.face().landmarks = landmarks
 
                 # Draw landmarks
                 landmarks = np.matrix([[p.x, p.y] for p in landmarks.parts()])
