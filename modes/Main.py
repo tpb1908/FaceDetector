@@ -19,5 +19,6 @@ class Main(Mode):
             filters.EyeHighlighter.EyeHighlighter.NAME, 
             filters.CountingLine.CountingLine.NAME,
             filters.Recolour.Recolour.NAME, 
-            filters.FaceTransform.FaceTransform.NAME
+            filters.FaceTransform.FaceTransform.NAME,
+            filters.Rec.Rec.NAME
         ]

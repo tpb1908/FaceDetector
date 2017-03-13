@@ -8,11 +8,6 @@ import Tkinter as tk
 import time
 import warnings
 from collections import OrderedDict
-import os
-import openface
-import cv2
-import numpy as np
-from random import randint
 
 from filters.CountingLine import CountingLine
 from filters.Enrolment import Enrolment
@@ -23,18 +18,17 @@ from filters.Fps import Fps
 from filters.Info import Info
 from filters.Landmarks import Landmarks
 from filters.Recolour import Recolour
-
+from filters.Rec import  Rec
 from modes.Capture import Capture
 from modes.Main import Main
-
 from sense.Sense import Sense
 from sense.ThreadedSense import ThreadedSense
 from sense.detection.Cv2Detection import Cv2Detection
 from sense.detection.DlibDetection import DlibDetection
-
 from ui.NameDialog import NameDialog
 from ui.NumberDialog import NumberDialog
 from ui.Webcam import Webcam
+
 
 class FaceDetector(object):
     DEBUG = False
@@ -54,21 +48,21 @@ class FaceDetector(object):
         self.filters = OrderedDict()
         self.filters[Fps.NAME] = Fps(True)
         self.filters[Info.NAME] = Info(False)
-        self.filters[Landmarks.NAME] = Landmarks(True)
+        self.filters[Landmarks.NAME] = Landmarks(False)
         self.filters[FaceHighlighter.NAME] = FaceHighlighter(True)
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(True)
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.height / 2, True)
         self.filters[Recolour.NAME] = Recolour(True)
         self.filters[FaceTransform.NAME] = FaceTransform(False)
-        self.filters[Enrolment.NAME] = Enrolment(False)
+        self.filters[Rec.NAME] = Rec(False)
 
-        print "Creating aligner"
-        self.aligner = openface.AlignDlib("./data/dlib_shape.dat")
-        
-        self.saved_faces = {}
+        def change_mode(m):
+            self.filters[Rec.NAME].set_mode(m)
 
-    def random_color(self):
-        return (randint(0,255), randint(0,255), randint(0,255))
+        self.window.bind('1', lambda e: change_mode(0))
+        self.window.bind('2', lambda e: change_mode(1))
+        self.window.bind('3', lambda e: change_mode(2))
+        self.window.bind('4', lambda e: change_mode(3))
 
     def loop(self):
         # TODO: handle timing better
@@ -77,56 +71,11 @@ class FaceDetector(object):
 
         # Apply filters
         if webcam_open:
-            # Convert to RGB
-            print "Converting frame to RGB"
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            self.sense.process_frame(frame)
+            for filter in self.get_filters():
+                frame = filter.apply(frame)
 
-            new_faces = {}
-
-            # Get all face positions in frame
-            for bounding_box in self.aligner.getAllFaceBoundingBoxes(frame):
-                
-
-                # Align face
-                print "Aligning face"
-                alignedFace = self.aligner.align(96, frame, bounding_box, skipMulti=False) # skip image if more than one face is detected
-
-                # Extract features
-                if alignedFace is not None:
-                    print "Initializing neural net"
-                    with openface.TorchNeuralNet(model="./data/nn4.small2.v1.t7") as net:
-                        print "Starting forward pass"
-                        features = net.forward(alignedFace)
-
-                        print features
-                else:
-                    print "No face found"
-
-                draw_color = None
-                for color, feat in self.saved_faces.iteritems():
-                    # Check if they are the same person
-                    d = features - feat
-                    if np.dot(d, d) < 0.99:
-                        draw_color = color                
-
-                if draw_color == None:
-                    # Face was not in previous frame so assign new color
-                    draw_color = self.random_color() 
-        
-                # Update features
-                new_faces[draw_color] = features
-                
-                # Draw box
-                cv2.rectangle(
-                    frame, 
-                    (bounding_box.left(), bounding_box.top()), 
-                    (bounding_box.right(), bounding_box.bottom()),
-                    draw_color,
-                    1)
-
-        
-            self.saved_faces = new_faces
-        
+        start = time.time()
         self.webcam.render(frame)
         self.window.after(1, self.loop)
 
@@ -148,7 +97,6 @@ class FaceDetector(object):
         def update_filters():
             if filter_count[0] != 0:
                 filter_menu.delete(0, filter_count[0])
-            
             for filter in self.get_filters():
                 filter.width = self.webcam.width
                 filter.height = self.webcam.height
@@ -174,12 +122,10 @@ class FaceDetector(object):
         toolbar = tk.Menu(self.window)
         self.window.config(menu=toolbar)
 
-        # Setup webcam menu 
+        # Setup webcam menu
         webcam_menu = tk.Menu(toolbar)
         webcam_menu.add_command(label="Open", command=self.webcam.open)
-        webcam_menu.add_command(label="Sample 1", command=lambda: self.webcam.open('data/Sample.mp4'))
-        webcam_menu.add_command(label="Sample 2", command=lambda: self.webcam.open('data/sample2.mpeg'))
-        webcam_menu.add_command(label="Sample 3", command=lambda: self.webcam.open('data/sample3.mp4'))
+        webcam_menu.add_command(label="Video", command=lambda: self.webcam.open('data/Sample.mp4'))
         webcam_menu.add_command(label="Close", command=self.webcam.close)
         toolbar.add_cascade(label="Webcam", menu=webcam_menu)
 
@@ -216,25 +162,8 @@ class FaceDetector(object):
 
         settings_menu.add_command(label="Counting line", command=show_counting_line_dialog)
 
-        def train():
-            print "training"
-
-            os.system("~/torch/install/bin/luajit ~/openface/batch-represent/main.lua -outDir ./people-embeddings/ -data ./people/")
-            os.system("~/openface/demos/classifier.py train ./people-embeddings/")
-
-            print "training done"
-            # do some training
-            pass
-
-        settings_menu.add_command(label="Train", comman=train)
-
         def show_enrolment_dialog():
-            def updateName(v):
-                print "Setting name to: " + v
-                self.modes[Capture.NAME].set_enrollee(v)
-                self.filters[Enrolment.NAME].set_name(v)
-
-            NameDialog(self.window, updateName)
+            NameDialog(self.window, lambda v: self.modes[Capture.NAME].set_enrollee(v))
             pass
 
         settings_menu.add_command(label="Enrolment", command=show_enrolment_dialog)
@@ -265,7 +194,6 @@ class FaceDetector(object):
             if key in self.modes[self.active_mode.get()].filters():
                 filtered.append(value)
         return filtered
-
 
 if __name__ == "__main__":
     # Disable deprecation warning
