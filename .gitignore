@@ -150,3 +150,6 @@ fabric.properties
 person_*
 
 *.pkl
+
+*.png
+*.jpg
