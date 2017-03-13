@@ -1,5 +1,12 @@
 # FaceDetector
 
+## Steps
+1. Get all bounding boxes (draw all bounding boxes the same color)
+2. Get face landmarks (draw landmarks on face)
+3. Get aligned face (draw aligned face on image)
+4. Compute features vector (draw vecotor on screen)
+5. See if we recognised people from last frame (if so give them the same color)
+
 ## Install
 apt dependencies
 ```

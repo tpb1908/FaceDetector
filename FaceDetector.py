@@ -1,216 +1,134 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Oct 05 12:46:24 2016
-
-@author: johnsona15
-"""
 import Tkinter as tk
 import time
 import warnings
 from collections import OrderedDict
+import os
+import openface
+import cv2
+import numpy as np
+from random import randint
 
-from filters.CountingLine import CountingLine
-from filters.Enrolment import Enrolment
-from filters.EyeHighlighter import EyeHighlighter
-from filters.FaceHighlighter import FaceHighlighter
-from filters.FaceTransform import FaceTransform
-from filters.Fps import Fps
-from filters.Info import Info
-from filters.Landmarks import Landmarks
-from filters.Recolour import Recolour
-
-from modes.Capture import Capture
-from modes.Main import Main
-
-from sense.Sense import Sense
-from sense.ThreadedSense import ThreadedSense
-from sense.detection.Cv2Detection import Cv2Detection
-from sense.detection.DlibDetection import DlibDetection
-
-from ui.NameDialog import NameDialog
-from ui.NumberDialog import NumberDialog
 from ui.Webcam import Webcam
 
-class FaceDetector(object):
-    DEBUG = False
 
-    def __init__(self):
-        self.window = tk.Tk()
-        self.webcam = Webcam(self.window)
+window = tk.Tk()
+webcam = Webcam(window)
 
-        self.sense = Sense()
+aligner = openface.AlignDlib("./dlib_shape.dat")
 
-        self.active_mode = tk.StringVar(value=Main.NAME)
+saved_faces = {}
 
-        self.modes = OrderedDict()
-        self.modes[Main.NAME] = Main()
-        self.modes[Capture.NAME] = Capture()
+mode = 0
 
-        self.filters = OrderedDict()
-        self.filters[Fps.NAME] = Fps(True)
-        self.filters[Info.NAME] = Info(False)
-        self.filters[Landmarks.NAME] = Landmarks(True)
-        self.filters[FaceHighlighter.NAME] = FaceHighlighter(True)
-        self.filters[EyeHighlighter.NAME] = EyeHighlighter(True)
-        self.filters[CountingLine.NAME] = CountingLine(self.webcam.height / 2, True)
-        self.filters[Recolour.NAME] = Recolour(True)
-        self.filters[FaceTransform.NAME] = FaceTransform(False)
-        self.filters[Enrolment.NAME] = Enrolment(False)
+def random_color():
+    return (randint(0,255), randint(0,255), randint(0,255))
 
-    def loop(self):
-        # TODO: handle timing better
-        start = time.time()
-        frame, webcam_open = self.webcam.next_frame()
+def loop():
+    global saved_faces
+    
+    frame, webcam_open = webcam.next_frame()
 
-        # Apply filters
-        if webcam_open:
-            self.sense.process_frame(frame)
-            for filter in self.get_filters():
-                frame = filter.apply(frame)
+    # Apply filters
+    if webcam_open:
+        # Convert to RGB
+        print "Converting frame to RGB"
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        start = time.time()
-        self.webcam.render(frame)
-        self.window.after(1, self.loop)
-
-    def on_closing(self):
-        self.window.destroy()
-
-    def run(self):
-        filter_menu = tk.Menu(self.window)
-        filter_count = [0]  # We can't update  the count in update_filters
-
-        # Toggle filter menu callback
-
-        def toggle_filter(name, on_var):
-            def callback():
-                self.filters[name].set_active(on_var.get())
-
-            return callback
-
-        def update_filters():
-            if filter_count[0] != 0:
-                filter_menu.delete(0, filter_count[0])
+        text = "INVALID MODE"
+        if mode == 0:
+            text = "Bounding boxes"
+        elif mode == 1:
+            text = "Landmarks"
+        elif mode == 2:
+            text = "Align face"
+        elif mode == 3:
+            text = "Recognition"
             
-            for filter in self.get_filters():
-                filter.width = self.webcam.width
-                filter.height = self.webcam.height
-                filter.set_sense(self.sense)
-                filter.set_mode(self.modes[self.active_mode.get()])
+        cv2.putText(frame, "Mode: {}".format(text), (20, 40), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0))
 
-                menu_item_on = tk.BooleanVar(value=filter.is_active())
-                filter_menu.add_checkbutton(
-                    label=filter.NAME,
-                    command=toggle_filter(filter.NAME, menu_item_on),
-                    variable=menu_item_on,
-                    onvalue=True,
-                    offvalue=False)
-                filter_count[0] += 1
+        new_faces = {}
 
-        # Setup resize event
-        self.webcam.on_resize(update_filters)
+        # Get all face positions in frame
+        for bounding_box in aligner.getAllFaceBoundingBoxes(frame):
+            cv2.rectangle(
+                frame, 
+                (bounding_box.left(), bounding_box.top()), 
+                (bounding_box.right(), bounding_box.bottom()),
+                random_color(),
+                3)
 
-        # Added window quit shortcut
-        self.window.bind('<Escape>', lambda e: self.on_closing())
+            if mode == 0:
+                continue
 
-        # Create toolbar
-        toolbar = tk.Menu(self.window)
-        self.window.config(menu=toolbar)
+            # Find landmarks
+            landmarks = aligner.findLandmarks(frame, bounding_box)
+            if mode == 1:
+                for (x, y) in landmarks:
+                    cv2.circle(frame, (x, y), 2, (0, 255, 0), 2)
+                continue
 
-        # Setup webcam menu 
-        webcam_menu = tk.Menu(toolbar)
-        webcam_menu.add_command(label="Open", command=self.webcam.open)
-        webcam_menu.add_command(label="Sample 1", command=lambda: self.webcam.open('data/Sample.mp4'))
-        webcam_menu.add_command(label="Sample 2", command=lambda: self.webcam.open('data/sample2.mpeg'))
-        webcam_menu.add_command(label="Sample 3", command=lambda: self.webcam.open('data/sample3.mp4'))
-        webcam_menu.add_command(label="Close", command=self.webcam.close)
-        toolbar.add_cascade(label="Webcam", menu=webcam_menu)
+            # align face
+            alignedFace = aligner.align(96, frame, bounding_box, landmarks, skipMulti=False) # skip image if more than one face is detected
+            
+            if mode == 2:
+                (ymax, xmax, _) = frame.shape
+                print frame.shape
+                for x in range(0, 96):
+                    for y in range(0, 96):
+                        for i in range(0, 3):
+                            xpos = x + bounding_box.right() - int(0.5 * bounding_box.width()) - (96 / 2)
+                            ypos = y + bounding_box.top() + int(0.5 * bounding_box.height()) - (96 / 2)
+                            if xpos > xmax or ypos > ymax:
+                                continue
+                            frame[ypos][xpos][i] = alignedFace[y][x][i]
 
-        mode_menu = tk.Menu(toolbar)
+                continue
 
-        for _, key in enumerate(self.modes):
-            mode_menu.add_radiobutton(label=key, variable=self.active_mode, command=update_filters)
-        toolbar.add_cascade(label="Modes", menu=mode_menu)
+            # Extract features
+            if alignedFace is not None:
+                with openface.TorchNeuralNet(model="./nn4.small2.v1.t7") as net:
+                    features = net.forward(alignedFace)
 
-        # Setup filter menu
-        update_filters()
-        toolbar.add_cascade(label="Filters", menu=filter_menu)
+            draw_color = None
+            for color, feat in saved_faces.iteritems():
+                # Check if they are the same person
+                d = features - feat
+                if np.dot(d, d) < 0.99:
+                    draw_color = color                
 
-        # Setup detector menu
-        detection_menu = tk.Menu(toolbar)
-        detection_var = tk.StringVar(value="dlib")
+            if draw_color == None:
+                # Face was not in previous frame so assign new color
+                draw_color = random_color() 
+    
+            # Update features
+            new_faces[draw_color] = features
+            
+            # Draw box
+            cv2.rectangle(
+                frame, 
+                (bounding_box.left(), bounding_box.top()), 
+                (bounding_box.right(), bounding_box.bottom()),
+                draw_color,
+                3)
 
-        # Detector menu callback
-        def set_detection():
-            if detection_var.get() == "cv2":
-                self.sense.set_detection(Cv2Detection())
-            else:
-                self.sense.set_detection(DlibDetection())
-
-        detection_menu.add_radiobutton(label="cv2", variable=detection_var, command=set_detection)
-        detection_menu.add_radiobutton(label="dlib", variable=detection_var, command=set_detection)
-
-        toolbar.add_cascade(label="Detection", menu=detection_menu)
-
-        settings_menu = tk.Menu(toolbar)
-
-        def show_counting_line_dialog():
-            NumberDialog(self.window, lambda v: self.filters[CountingLine.NAME].set_line_pos(v))
-
-        settings_menu.add_command(label="Counting line", command=show_counting_line_dialog)
-
-        def train():
-            # do some training
-            pass
-
-        settings_menu.add_command(label="Train", comman=train)
-
-        def show_enrolment_dialog():
-            def updateName(v):
-                print "Setting name to: " + v
-                self.modes[Capture.NAME].set_enrollee(v)
-                self.filters[Enrolment.NAME].set_name(v)
-
-            NameDialog(self.window, updateName)
-            pass
-
-        settings_menu.add_command(label="Enrolment", command=show_enrolment_dialog)
-
-        thread_var = tk.IntVar(value=(type(self.sense) is ThreadedSense))
-
-        def toggle_thread():
-            if thread_var.get() == 1:
-                self.sense = Sense()
-            else:
-                self.sense = ThreadedSense()
-
-            update_filters()
-
-        settings_menu.add_checkbutton(label="Threaded", var=thread_var, command=toggle_thread)
-
-        toolbar.add_cascade(label="Settings", menu=settings_menu)
-
-        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
-
-        # Start window
-        self.loop()
-        self.window.mainloop()
-
-    def get_filters(self):
-        filtered = []
-        for key, value in self.filters.items():
-            if key in self.modes[self.active_mode.get()].filters():
-                filtered.append(value)
-        return filtered
+        saved_faces = new_faces
+    
+    webcam.render(frame)
+    window.after(1, loop)
 
 
-if __name__ == "__main__":
-    # Disable deprecation warning
-    def warn(*args, **kwargs):
-        pass
+# Added window quit shortcut
+window.bind('<Escape>', lambda e: window.destroy())
 
+# Modes
+def change_mode(m):
+    global mode
+    mode = m
 
-    if not FaceDetector.DEBUG:
-        warnings.warn = warn
+window.bind('1', lambda e: change_mode(0))
+window.bind('2', lambda e: change_mode(1))
+window.bind('3', lambda e: change_mode(2))
+window.bind('4', lambda e: change_mode(3))
 
-    # Run the program
-    FaceDetector().run()
+loop()
+window.mainloop()
