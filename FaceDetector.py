@@ -8,6 +8,7 @@ import Tkinter as tk
 import time
 import warnings
 from collections import OrderedDict
+import os
 
 from filters.CountingLine import CountingLine
 from filters.Enrolment import Enrolment
@@ -159,6 +160,12 @@ class FaceDetector(object):
         settings_menu.add_command(label="Counting line", command=show_counting_line_dialog)
 
         def train():
+            print "training"
+
+            os.system("~/torch/install/bin/luajit ~/openface/batch-represent/main.lua -outDir ./people-embeddings/ -data ./people/")
+            os.system("~/openface/demos/classifier.py train ./people-embeddings/")
+
+            print "training done"
             # do some training
             pass
 

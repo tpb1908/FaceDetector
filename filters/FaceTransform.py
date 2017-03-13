@@ -48,14 +48,4 @@ class FaceTransform(Filter):
         return frame
 
     def save_image(self, aligned):
-        enrollee = self._mode.enrollee()
-        if self.enrollee != enrollee:
-            self.ctr = 0
-            self.enrollee = enrollee
-            if not os.path.exists(enrollee):
-                os.makedirs("person_{}".format(enrollee))
-            path, dirs, files = os.walk("person_{}".format(enrollee)).next()
-            self.ctr = len(files)
-        imsave(os.path.join(self._mode.enrollee(), "{}_.png".format(self.ctr)), aligned)
-        self.ctr += 1
-
+        pass

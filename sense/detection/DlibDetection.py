@@ -31,7 +31,7 @@ class DlibDetection(Detection):
             face_position = (left * offset, top * offset,
                              (right - left) * offset, (bottom - top) * offset)
             if left > 0 and top > 0 and bottom < frame.shape[1] and right < frame.shape[0]:
-                faces.append(Face(face_position, img_grey))
+                faces.append(Face(face_position, img_grey, frame))
         self._last_update_time = 1000 * (time.time() - start)
         return faces
 

@@ -16,23 +16,16 @@ class Enrolment(Filter):
         self.name = None
         self.ctr = 0
 
-    def start(self, name):  # Start recording features
-        # self.name = raw_input("What is your name? ")
-        self.name = "person_{}".format(name)
-        self._images = []
-        if not os.path.exists(self.name):
-            os.makedirs(self.name)
-        path, dirs, files = os.walk(self.name).next()
-        self.ctr = len(files)
-        print "Starting with " + str(self.ctr)
-
     def done(self):  # Complete the recording of a person
+        pass
+
+    def start(self):
         pass
 
     def set_name(self, name):
         self.name = name
 
-        self.name = "person_{}".format(name)
+        self.name = "people/{}".format(name)
         self._images = []
         if not os.path.exists(self.name):
             os.makedirs(self.name)
@@ -57,6 +50,7 @@ class Enrolment(Filter):
                     frame, "{}/{}".format(len(self._images), self.ctr),
                     (shape.x + shape.width, shape.y + shape.height),
                     cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
+                print os.path.join(self.name, "{}_.png".format(self.ctr))
                 imsave(os.path.join(self.name, "{}_.png".format(self.ctr)), self._images[-1])
                 self.ctr += 1
         
