@@ -14,7 +14,8 @@ class Main(Mode):
         return [
             filters.Fps.Fps.NAME, 
             filters.Info.Info.NAME, 
-            filters.Landmarks.Landmarks.NAME, 
+            filters.Landmarks.Landmarks.NAME,
+            filters.MovementVector.MovementVector.NAME,
             filters.FaceHighlighter.FaceHighlighter.NAME,
             filters.EyeHighlighter.EyeHighlighter.NAME, 
             filters.CountingLine.CountingLine.NAME,

@@ -15,38 +15,37 @@ class MovementVector(Filter):
         self._people_positions = {}
 
     def process_frame(self, frame):
-        if not self._sense:
-            new_people_positions = {}
+        new_people_positions = {}
 
-            for (_, person) in self._sense.active_people().iteritems():
-                name = person.name()
-                if name in self._people_positions:
-                    new_people_positions[name] = self._people_positions[name]
-                    if len(new_people_positions[name]) > MovementVector.RETAIN:
-                        new_people_positions[name].pop(0)
-                else:
-                    new_people_positions[name] = []
+        for (_, person) in self._sense.active_people().iteritems():
+            name = person.name()
+            if name in self._people_positions:
+                new_people_positions[name] = self._people_positions[name]
+                if len(new_people_positions[name]) > MovementVector.RETAIN:
+                    new_people_positions[name].pop(0)
+            else:
+                new_people_positions[name] = []
 
-                new_people_positions[name].append(person.centroid())
+            new_people_positions[name].append(person.centroid())
 
-                a, b = self.linear_regression(new_people_positions[name][-min(4, len(new_people_positions[name])):])
+            a, b = self.linear_regression(new_people_positions[name][-min(4, len(new_people_positions[name])):])
 
-                p1 = person.centroid()
-                theta = -math.atan(b) - (3.141593653 * 1 / 2)
-                # print(b, int(theta * 180/3.141592653))
+            p1 = person.centroid()
+            theta = -math.atan(b) - (3.141593653 * 1 / 2)
+            # print(b, int(theta * 180/3.141592653))
 
-                p2 = (
-                    int(p1[0] + math.cos(theta) * MovementVector.LENGTH),
-                    int(p1[1] + math.sin(theta) * MovementVector.LENGTH))
-                # print (p1, p2)
+            p2 = (
+                int(p1[0] + math.cos(theta) * MovementVector.LENGTH),
+                int(p1[1] + math.sin(theta) * MovementVector.LENGTH))
+            # print (p1, p2)
 
-                for point in new_people_positions[name]:
-                    cv2.circle(frame, point, 3, (0, 255, 0), 3)
+            for point in new_people_positions[name]:
+                cv2.circle(frame, point, 3, (0, 255, 0), 3)
 
-                cv2.line(frame, p1, p2, MovementVector.COLOR, 3)
-                cv2.circle(frame, p2, 3, (255, 0, 0), 3)
+            cv2.line(frame, p1, p2, MovementVector.COLOR, 3)
+            cv2.circle(frame, p2, 3, (255, 0, 0), 3)
 
-                self._people_positions = new_people_positions
+            self._people_positions = new_people_positions
         
         return frame
 

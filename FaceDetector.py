@@ -18,7 +18,8 @@ from filters.Fps import Fps
 from filters.Info import Info
 from filters.Landmarks import Landmarks
 from filters.Recolour import Recolour
-from filters.Rec import  Rec
+from filters.Rec import Rec
+from filters.MovementVector import MovementVector
 from modes.Capture import Capture
 from modes.Main import Main
 from sense.Sense import Sense
@@ -49,13 +50,13 @@ class FaceDetector(object):
         self.filters[Fps.NAME] = Fps(True)
         self.filters[Info.NAME] = Info(False)
         self.filters[Landmarks.NAME] = Landmarks(False)
+        self.filters[MovementVector.NAME] = MovementVector(False)
         self.filters[FaceHighlighter.NAME] = FaceHighlighter(True)
         self.filters[EyeHighlighter.NAME] = EyeHighlighter(True)
         self.filters[CountingLine.NAME] = CountingLine(self.webcam.height / 2, True)
         self.filters[Recolour.NAME] = Recolour(True)
         self.filters[FaceTransform.NAME] = FaceTransform(False)
         self.filters[Rec.NAME] = Rec(False)
-
         def change_mode(m):
             self.filters[Rec.NAME].set_mode(m)
 
@@ -77,6 +78,7 @@ class FaceDetector(object):
 
         start = time.time()
         self.webcam.render(frame)
+
         self.window.after(1, self.loop)
 
     def on_closing(self):

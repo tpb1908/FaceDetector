@@ -16,7 +16,7 @@ class Info(Filter):
         width, height, channels = frame.shape
         cv2.putText(
             frame,
-            "W{} H{} C{} T{}".format(width, height, channels, round(self._sense.detect_time(), 3)),
+            "W{} H{} C{} T{}\n People{}".format(width, height, channels, round(self._sense.detect_time(), 3), len(self._sense.active_people())),
             (10, 20),
             cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 2)
 

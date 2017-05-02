@@ -1,8 +1,8 @@
-import os
 import openface
 import cv2
 import numpy as np
 from random import randint
+from ui.Painter import Painter
 
 from filters.Filter import Filter
 
@@ -39,10 +39,10 @@ class Rec(Filter):
 
         # Get all face positions in frame
         for bounding_box in self.aligner.getAllFaceBoundingBoxes(frame):
-            cv2.rectangle(
+            Painter.rectangle(
                 frame,
-                (bounding_box.left(), bounding_box.top()),
-                (bounding_box.right(), bounding_box.bottom()),
+                bounding_box.left(), bounding_box.top(),
+                bounding_box.right(), bounding_box.bottom(),
                 self.random_color(),
                 3)
 
@@ -86,7 +86,7 @@ class Rec(Filter):
                 if np.dot(d, d) < 0.99:
                     draw_color = color
 
-            if draw_color == None:
+            if draw_color is None:
                 # Face was not in previous frame so assign new color
                 draw_color = self.random_color()
 
@@ -94,10 +94,10 @@ class Rec(Filter):
             new_faces[draw_color] = features
 
             # Draw box
-            cv2.rectangle(
+            Painter.rectangle(
                 frame,
-                (bounding_box.left(), bounding_box.top()),
-                (bounding_box.right(), bounding_box.bottom()),
+                bounding_box.left(), bounding_box.top(),
+                bounding_box.right(), bounding_box.bottom(),
                 draw_color,
                 3)
 

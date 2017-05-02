@@ -1,7 +1,7 @@
 import cv2
 
 from filters.Filter import Filter
-
+from ui.Painter import Painter
 
 class EyeHighlighter(Filter):
     NAME = "Eye Highlighter"
@@ -16,9 +16,11 @@ class EyeHighlighter(Filter):
             eyes = self._sense.eyes()
             for eye in eyes:
                 shape = eye.shape()
-                cv2.rectangle(frame,
-                              (shape.x, shape.y),
-                              (shape.x + shape.width - 1, shape.y + shape.height - 1),
-                              EyeHighlighter.BOUNDING_BOX_COLOUR,
-                              1)
+                Painter.rectangle(frame,
+                                  shape.x,
+                                  shape.y,
+                                  shape.x + shape.width -1,
+                                  shape.y + shape.height - 1,
+                                  EyeHighlighter.BOUNDING_BOX_COLOUR,
+                                  1)
         return frame

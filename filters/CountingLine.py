@@ -1,6 +1,7 @@
 import cv2
 
 from filters.Filter import Filter
+from ui.Painter import Painter
 
 
 class CountingLine(Filter):
@@ -24,8 +25,13 @@ class CountingLine(Filter):
             matches = self._sense.active_people()
 
             # Draw the boundary line
-            cv2.line(frame, (0, self._line_pos), (filter.width, self._line_pos),
-                     CountingLine.DIVIDER_COLOUR, 1)
+            Painter.line(frame,
+                         0,
+                         self._line_pos,
+                         filter.width,
+                         self._line_pos,
+                          CountingLine.DIVIDER_COLOUR,
+                         1)
 
             for _, person in matches.iteritems():
 

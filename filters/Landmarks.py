@@ -4,7 +4,7 @@ import numpy as np
 from dlib import shape_predictor
 
 from filters.Filter import Filter
-
+from ui.Painter import Painter
 
 class Landmarks(Filter):
     NAME = "Landmarks"
@@ -34,7 +34,8 @@ class Landmarks(Filter):
                     if last is None:
                         start = point[0]
                     else:
-                        cv2.line(frame, (point.item(0), point.item(1)), (last.item(0), last.item(1)), (0, 255, 0), 1)
+                        Painter.line(frame, point.item(0), point.item(1), last.item(0), last.item(1), (0, 255, 0), 1)
+                        # cv2.line(frame, (point.item(0), point.item(1)), (last.item(0), last.item(1)), (0, 255, 0), 1)
                     position = (point[0, 0], point[0, 1])
                     cv2.circle(frame, position, 3, color=(0, 255, 255))
                     # http://openface-api.readthedocs.io/en/latest/_images/dlib-landmark-mean.png
@@ -45,7 +46,8 @@ class Landmarks(Filter):
                         last = None
                     elif idx in [35, 41, 47, 67]:
                         last = None
-                        cv2.line(frame, (point.item(0), point.item(1)), (start.item(0), start.item(1)), (0, 255, 0), 1)
+                        Painter.line(frame, point.item(0), point.item(1), start.item(0), start.item(1), (0, 255, 0), 1)
+                        # cv2.line(frame, (point.item(0), point.item(1)), (start.item(0), start.item(1)), (0, 255, 0), 1)
                     else:
                         last = point[0]
 

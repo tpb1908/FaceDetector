@@ -1,7 +1,7 @@
 import cv2
 import modes.Main as Main
 from filters.Filter import Filter
-
+from ui.Painter import Painter
 
 class FaceHighlighter(Filter):
     # Colours for drawing on processed frames
@@ -23,12 +23,14 @@ class FaceHighlighter(Filter):
                 shape = person.shape()
 
                 # Draw the bounding box
-                cv2.rectangle(frame,
-                              (shape.x, shape.y),
-                              (shape.x + shape.width - 1, shape.y + shape.height - 1),
+
+                Painter.rectangle(frame,
+                              shape.x,
+                              shape.y,
+                              shape.x + shape.width - 1,
+                              shape.y + shape.height - 1,
                               FaceHighlighter.BOUNDING_BOX_COLOUR,
                               1)
-
                 # Draw centroid
                 # cv2.circle(frame, person.centroid(), 2, FaceHighlighter.CENTROID_COLOUR, -1)
 
